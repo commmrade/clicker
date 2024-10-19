@@ -32,6 +32,7 @@ public:
     METHOD_ADD(api::clicks, "/clicks?name={username}&click={clck}", Post);
     METHOD_ADD(api::daily_pay, "/daily-pay?name={username}", Post);
     METHOD_ADD(api::purchase, "/purchase?name={username}&modf={modifier}", Post);
+    METHOD_ADD(api::login_token, "/login_t?token={tkn}", Get);
     //TODO pay method that will add offline money
    
     METHOD_LIST_END
@@ -39,6 +40,7 @@ public:
     
 protected:
     void login(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &name, const std::string &password);
+    void login_token(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &token);
     void reg(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &name, const std::string &password);
 
     void user(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &name);

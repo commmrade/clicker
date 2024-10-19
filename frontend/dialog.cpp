@@ -4,6 +4,7 @@
 #include <QNetworkReply>
 #include <QUrl>
 #include <QJsonDocument>
+#include<QTimer>
 #include <QJsonObject>
 #include <QDebug>
 #include<QUrlQuery>
@@ -15,6 +16,10 @@ Dialog::Dialog(QWidget *parent)
 {
     ui->setupUi(this);
     handler = new HttpHandler();
+
+
+
+    QTimer::singleShot(0, this, SLOT(login_through_token()));
 }
 
 Dialog::~Dialog()
@@ -22,6 +27,34 @@ Dialog::~Dialog()
     delete handler;
     delete ui;
 }
+
+void Dialog::login_through_token() {
+    QSettings settings;
+    QString token = settings.value("token").toString();
+    qDebug() << "name is " << settings.value("name");
+    QMap<QString, QString> query_params;
+    query_params.insert("token", token);
+
+    handler->handle_get_request("http://127.0.0.1:8848/api/login_t", [this](int code, QString reply_data) {
+        if (code == 200) {
+            QJsonDocument jDoc = QJsonDocument::fromJson(reply_data.toUtf8());
+            QJsonObject jObj = jDoc.object();
+            QSettings settings;
+            qDebug() << jObj;
+            settings.setValue("name", jObj["name"].toString());
+            qDebug() << "Val is" << settings.value("name").toString();
+
+            accept();
+        } else if (code == 401) {
+
+        } else {
+            qDebug() << code;
+            ui->reg_btn->setText("Server is dead, wait");
+            ui->login_btn->setText("Server is dead, wait");
+        }
+    }, query_params);
+}
+
 
 void Dialog::on_login_btn_clicked()
 {

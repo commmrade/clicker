@@ -17,7 +17,7 @@ public:
     ~Dialog();
 
 private slots:
-
+    void login_through_token();
 
 
     void on_login_btn_clicked();
@@ -36,6 +36,8 @@ private:
 
     void register_user();
     void login_user();
+
+
 
 };
 #endif // DIALOG_H

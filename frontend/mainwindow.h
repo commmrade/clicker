@@ -26,6 +26,8 @@ private slots:
 
     void on_pay_mod_button_clicked();
 
+    void on_log_out_btn_clicked();
+
 private:
     Ui::MainWindow *ui;
     int clicks;

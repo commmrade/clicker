@@ -1,10 +1,12 @@
+#include <drogon/HttpResponse.h>
+#include <drogon/HttpTypes.h>
 #include<klewy/Server.hpp>
 #include <memory>
 
 
 
 api::api() {
-    db = std::make_unique<DatabaseHandler>("tcp://127.0.0.1:3306", "klewy", "makaka", "clicker");
+    db = std::make_unique<DatabaseHandler>("tcp://127.0.0.1:3306", "klewy", "root", "clicker");
 }
 
 void api::login(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &name, const std::string &password) {
@@ -33,6 +35,28 @@ void api::login(const HttpRequestPtr &req, std::function<void(const HttpResponse
     auto resp = HttpResponse::newHttpJsonResponse(js);
     resp->setStatusCode(code);
     callback(resp);
+}
+void api::login_token(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &token) {
+    Json::Value js;
+    if (token.empty()) {
+        auto response =  HttpResponse::newHttpJsonResponse(js);
+        response->setStatusCode(HttpStatusCode::k401Unauthorized);
+
+        callback(response);
+        return;
+    }
+
+    if (!SessionManager::check_key(token)) {
+        auto response =  HttpResponse::newHttpJsonResponse(js);
+        response->setStatusCode(HttpStatusCode::k401Unauthorized);
+
+        callback(response);
+        return;
+    }
+    js["name"] = SessionManager::get_name(token);
+    auto response = HttpResponse::newHttpJsonResponse(js);
+    response->setStatusCode(HttpStatusCode::k200OK);
+    callback(response);
 }
 
 void api::reg(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &name, const std::string &password) {
@@ -93,7 +117,7 @@ void api::clicks(const HttpRequestPtr &req, std::function<void(const HttpRespons
 
     auto resp = HttpResponse::newHttpResponse();
     std::string tkn = req->getHeader("Authorization");
-    if (!SessionManager::check_key(tkn, name)) {
+    if (!SessionManager::check_key_and_name(tkn, name)) {
         resp->setStatusCode(HttpStatusCode::k401Unauthorized);
         callback(resp);
         return;
@@ -112,7 +136,7 @@ void api::purchase(const HttpRequestPtr &req, std::function<void(const HttpRespo
     }
     auto resp = HttpResponse::newHttpResponse();
     std::string tkn = req->getHeader("Authorization");
-    if (!SessionManager::check_key(tkn, name)) {
+    if (!SessionManager::check_key_and_name(tkn, name)) {
         resp->setStatusCode(HttpStatusCode::k401Unauthorized);
         callback(resp);
         return;
@@ -164,7 +188,7 @@ void api::daily_pay(const HttpRequestPtr &req, std::function<void(const HttpResp
 
     auto resp = HttpResponse::newHttpResponse();
     std::string tkn = req->getHeader("Authorization");
-    if (!SessionManager::check_key(tkn, name)) {
+    if (!SessionManager::check_key_and_name(tkn, name)) {
         resp->setStatusCode(HttpStatusCode::k401Unauthorized);
         callback(resp);
         return;

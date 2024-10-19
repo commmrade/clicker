@@ -277,3 +277,13 @@ void MainWindow::update_balance() {
     ui->pushButton->setText("Click");
 }
 
+
+void MainWindow::on_log_out_btn_clicked()
+{
+    QSettings settings;
+    settings.remove("token");
+    settings.remove("name");
+
+    QApplication::quit();
+}
+
