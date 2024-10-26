@@ -5,7 +5,7 @@
 
 
 std::string SessionManager::make_key(const std::string &name) {
-    std::string secret_key {"niggas"};
+    std::string secret_key {"vladivostok1488"};
 
     auto token = jwt::create()
     .set_issued_now()
@@ -16,7 +16,7 @@ std::string SessionManager::make_key(const std::string &name) {
     return token;
 }
 bool SessionManager::check_key_and_name(const std::string &key, const std::string &name) {
-    std::string secret_key {"niggas"};
+    std::string secret_key {"vladivostok1488"};
     try {
         auto decoded = jwt::decode(key);
         if (decoded.get_payload_claim("name").as_string() != name) {
@@ -39,7 +39,7 @@ bool SessionManager::check_key_and_name(const std::string &key, const std::strin
     return false;
 } 
 bool SessionManager::check_key(const std::string &key) {
-    std::string secret_key {"niggas"};
+    std::string secret_key {"vladivostok1488"};
 
     try {
         auto decoded = jwt::decode(key);
