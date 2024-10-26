@@ -1,7 +1,9 @@
 #include "jdbc/cppconn/resultset.h"
 #include "jdbc/cppconn/statement.h"
+#include <exception>
 #include <klewy/DatabaseHandler.hpp>
 #include <memory>
+#include <optional>
 
 DatabaseHandler::DatabaseHandler(const std::string ip, const std::string username, const std::string passwd, const std::string scheme) {
     driver = get_driver_instance();
@@ -12,7 +14,7 @@ DatabaseHandler::~DatabaseHandler() {
     delete con;
 }
 
-std::string DatabaseHandler::get_password(const std::string &name) {
+std::optional<std::string> DatabaseHandler::get_password(const std::string &name) {
     con->setSchema("clicker");
     std::unique_ptr<sql::Statement> stmt(con->createStatement());
    
@@ -23,7 +25,7 @@ std::string DatabaseHandler::get_password(const std::string &name) {
         return result;
     }
 
-    return "";
+    return std::nullopt;
 }
 double DatabaseHandler::get_balance(const std::string &name) {
     std::unique_ptr<sql::Statement> stmt(con->createStatement());
@@ -93,16 +95,19 @@ double DatabaseHandler::get_click_mod_price(const std::string &name) {
     }
     return -1.0;
 }
-std::string DatabaseHandler::get_last_pay(const std::string &name) {
+std::optional<std::string> DatabaseHandler::get_last_pay(const std::string &name) {
     std::unique_ptr<sql::Statement> stmt(con->createStatement());
     std::string query = "SELECT last_pay FROM game WHERE name='" + name + "'";
     std::unique_ptr<sql::ResultSet> res(stmt->executeQuery(query));
 
     while (res->next()) {
         std::string last_pay = res->getString(1);
+        if (last_pay.empty()) {
+            return std::nullopt;
+        }
         return last_pay;
     }
-    return "";
+    return std::nullopt;
 }
 
 void DatabaseHandler::set_click_mod(const std::string &name, const double new_click_mod) {
@@ -138,6 +143,7 @@ void DatabaseHandler::set_pay_mod_price(const std::string &name, const double ne
     pstmt->executeUpdate();
 }
 void DatabaseHandler::set_balance(const std::string &name, const double sum) {
+    std::cout << sum << std::endl;
     std::unique_ptr<sql::PreparedStatement> pstmt(con->prepareStatement("UPDATE game SET balance=? WHERE name=?"));
     pstmt->setDouble(1, std::round(sum * 100.0f) / 100.0f);
     pstmt->setString(2, name);
@@ -156,9 +162,10 @@ void DatabaseHandler::set_last_pay(const std::string &name) {
 }
 
 bool DatabaseHandler::add_user(const std::string &name, const std::string &pass) {
-    if (!get_password(name).empty()) {  
-        return false;
-    }
+    
+    auto password_opt = get_password(name);
+
+    if (password_opt) return false;
 
     {
         std::unique_ptr<sql::PreparedStatement> pstmt(con->prepareStatement("INSERT INTO users (username, password) VALUES (?, ?)"));
@@ -168,18 +175,21 @@ bool DatabaseHandler::add_user(const std::string &name, const std::string &pass)
     }
     
     {
-        std::unique_ptr<sql::PreparedStatement> pstmt(con->prepareStatement("INSERT INTO game (name) VALUES (?)"));
+        std::unique_ptr<sql::PreparedStatement> pstmt(con->prepareStatement("INSERT INTO game (name, balance) VALUES (?, ?)"));
         pstmt->setString(1, name);
+        pstmt->setDouble(2, 0.0);
         pstmt->executeUpdate();
     }
     return true;
 }
 void DatabaseHandler::add_clicks(const std::string &name, int clicks) {
-    double balance = get_balance(name);
+
+    auto balance = get_balance(name);
 
     std::cout << "clicks " << clicks << std::endl;
     std::unique_ptr<sql::PreparedStatement> pstmt(con->prepareStatement("UPDATE game SET balance=? WHERE name=?"));
     pstmt->setDouble(1, balance + std::round((clicks * get_click_modifier(name)) * 100.0f) / 100.0f);
     pstmt->setString(2, name);
     pstmt->executeUpdate();
+     
 }

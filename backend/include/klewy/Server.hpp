@@ -5,6 +5,7 @@
 #include <drogon/HttpResponse.h>
 #include <drogon/HttpTypes.h>
 #include <drogon/drogon.h>
+#include<optional>
 #include <functional>
 #include <iomanip>
 #include <json/value.h>

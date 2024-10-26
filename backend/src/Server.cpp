@@ -33,6 +33,7 @@ bool api::check_auth(const HttpRequestPtr &request, const std::string &name) {
 }
 void api::login(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &name, const std::string &password) {
     if (name.empty() || password.empty()) { //If data is not correct
+
         respond_error(HttpStatusCode::k400BadRequest, std::move(callback));
         return;
     }
@@ -41,9 +42,9 @@ void api::login(const HttpRequestPtr &req, std::function<void(const HttpResponse
     Json::Value js;
     HttpStatusCode code;
     
-    const std::string passwd = db->get_password(name);
-    if (!passwd.empty()) { //User does exist
-        if (bcrypt::validatePassword(password, passwd)) /*TODO: make sha256 pass*/ {
+    auto passwd = db->get_password(name);
+    if (passwd) { //User does exist
+        if (bcrypt::validatePassword(password, passwd.value())) /*TODO: make sha256 pass*/ {
             code = drogon::k200OK;
             js["token"] = SessionManager::make_key(name);
         } else {
@@ -74,7 +75,8 @@ void api::login_token(const HttpRequestPtr &req, std::function<void(const HttpRe
 }
 
 void api::reg(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &name, const std::string &password) {
-    if (name.empty() || password.empty()) { //if data is not correct
+    if (name.empty() || password.empty() || name.size() > 16 || password.size() > 32) { //if data is not correct
+        std::cout << "here\n";
         respond_error(k400BadRequest, std::move(callback));
         return;
     }
@@ -84,6 +86,7 @@ void api::reg(const HttpRequestPtr &req, std::function<void(const HttpResponsePt
     
     if(!db->add_user(name, bcrypt::generateHash(password))) {
         code = drogon::k400BadRequest;
+        std::cout << "there\n";
         js["error"] = "user already exists";
     } else {
         code = drogon::k200OK;
@@ -107,12 +110,12 @@ void api::user(const HttpRequestPtr &req, std::function<void(const HttpResponseP
     js["click_mod"] = db->get_click_modifier(name);
     js["hourly_payout"] = db->get_per_hour_pay(name);
     js["hourly_payout_mod"] = db->get_pay_mod(name);
-    js["last_pay"] = db->get_last_pay(name);
+    js["last_pay"] = db->get_last_pay(name).value_or("NULL");
     js["click_mod_price"] = db->get_click_mod_price(name);
     js["hourly_payout_mod_price"] = db->get_pay_mod_price(name);
+
     auto response = HttpResponse::newHttpJsonResponse(js);
     response->setStatusCode(HttpStatusCode::k200OK);
-    
     callback(response);
 }
 
@@ -189,16 +192,17 @@ void api::daily_pay(const HttpRequestPtr &req, std::function<void(const HttpResp
         return;
     }
 
-    std::string prev_time = db->get_last_pay(name);
-    if (prev_time.empty()) {
+    auto prev_time = db->get_last_pay(name);
+    if (!prev_time.has_value()) {
         db->set_last_pay(name);
         respond_error(k400BadRequest, std::move(callback));
         return;
     }
+    std::cout << prev_time.value() << std::endl;
 
     //Counting time
     std::tm tm{};
-    std::stringstream ss{prev_time};
+    std::stringstream ss{prev_time.value()};
     ss >> std::get_time(&tm, "%Y-%m-%d %H:%M:%S");
     std::time_t time = std::mktime(&tm);
 
@@ -210,7 +214,8 @@ void api::daily_pay(const HttpRequestPtr &req, std::function<void(const HttpResp
 
     double money_total = (hrs_passed.count() * db->get_per_hour_pay(name)) * db->get_pay_mod(name);
     double balance_now = db->get_balance(name);
-    
+
+    std::cout << money_total << " daily\n"; 
     db->set_balance(name, balance_now + money_total);
     db->set_last_pay(name);
 
