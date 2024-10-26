@@ -5,7 +5,7 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-
+    
     // w.show();
     Dialog dialog;
     bool show = false;

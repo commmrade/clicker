@@ -48,4 +48,9 @@ protected:
     void clicks(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &name, const int &click);
     void purchase(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &name, const std::string &mod);
     void daily_pay(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &name);
+
+    void respond_error(HttpStatusCode code, std::function<void(const HttpResponsePtr &)> &&callback);
+    void respond_error(HttpStatusCode code, std::function<void(const HttpResponsePtr &)> &&callback, Json::Value js);
+
+    bool check_auth(const HttpRequestPtr &request, const std::string &name);
 };

@@ -1,7 +1,9 @@
+#include <cstdio>
 #include <drogon/HttpResponse.h>
 #include <drogon/HttpTypes.h>
 #include<klewy/Server.hpp>
 #include <memory>
+#include <utility>
 
 
 
@@ -9,11 +11,29 @@ api::api() {
     db = std::make_unique<DatabaseHandler>("tcp://127.0.0.1:3306", "klewy", "root", "clicker");
 }
 
+void api::respond_error(HttpStatusCode code, std::function<void(const HttpResponsePtr &)> &&callback) {
+    auto resp = HttpResponse::newHttpResponse();
+    resp->setStatusCode(code);
+    callback(resp);
+}
+
+void api::respond_error(HttpStatusCode code, std::function<void(const HttpResponsePtr &)> &&callback, Json::Value js) {
+    auto resp = HttpResponse::newHttpJsonResponse(js);
+    resp->setStatusCode(code);
+    callback(resp);
+}
+
+bool api::check_auth(const HttpRequestPtr &request, const std::string &name) {
+    auto resp = HttpResponse::newHttpResponse();
+    std::string tkn = request->getHeader("Authorization");
+    if (!SessionManager::check_key_and_name(tkn, name)) {
+        return false;
+    }
+    return true;
+}
 void api::login(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &name, const std::string &password) {
     if (name.empty() || password.empty()) { //If data is not correct
-        auto resp = HttpResponse::newHttpResponse();
-        resp->setStatusCode(HttpStatusCode::k400BadRequest);
-        callback(resp);
+        respond_error(HttpStatusCode::k400BadRequest, std::move(callback));
         return;
     }
 
@@ -39,18 +59,12 @@ void api::login(const HttpRequestPtr &req, std::function<void(const HttpResponse
 void api::login_token(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &token) {
     Json::Value js;
     if (token.empty()) {
-        auto response =  HttpResponse::newHttpJsonResponse(js);
-        response->setStatusCode(HttpStatusCode::k401Unauthorized);
-
-        callback(response);
+        respond_error(HttpStatusCode::k401Unauthorized, std::move(callback));
         return;
     }
 
     if (!SessionManager::check_key(token)) {
-        auto response =  HttpResponse::newHttpJsonResponse(js);
-        response->setStatusCode(HttpStatusCode::k401Unauthorized);
-
-        callback(response);
+        respond_error(k401Unauthorized, std::move(callback));
         return;
     }
     js["name"] = SessionManager::get_name(token);
@@ -61,9 +75,7 @@ void api::login_token(const HttpRequestPtr &req, std::function<void(const HttpRe
 
 void api::reg(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &name, const std::string &password) {
     if (name.empty() || password.empty()) { //if data is not correct
-        auto response = HttpResponse::newHttpResponse();
-        response->setStatusCode(HttpStatusCode::k400BadRequest);
-        callback(response);
+        respond_error(k400BadRequest, std::move(callback));
         return;
     }
 
@@ -86,9 +98,7 @@ void api::reg(const HttpRequestPtr &req, std::function<void(const HttpResponsePt
 
 void api::user(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &name) {
     if (name.empty()) {
-        auto response = HttpResponse::newHttpResponse();
-        response->setStatusCode(HttpStatusCode::k400BadRequest);
-        callback(response);
+        respond_error(k400BadRequest, std::move(callback));
         return;
     }
 
@@ -109,17 +119,14 @@ void api::user(const HttpRequestPtr &req, std::function<void(const HttpResponseP
 void api::clicks(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &name, const int &click) {
     std::cout << name << " is name \nclicks: " << click << std::endl;
     if (name.empty()) {
-        auto resp = HttpResponse::newHttpResponse();
-        resp->setStatusCode(HttpStatusCode::k400BadRequest);
-        callback(resp);
+        respond_error(k400BadRequest, std::move(callback));
         return;
     }
 
     auto resp = HttpResponse::newHttpResponse();
-    std::string tkn = req->getHeader("Authorization");
-    if (!SessionManager::check_key_and_name(tkn, name)) {
-        resp->setStatusCode(HttpStatusCode::k401Unauthorized);
-        callback(resp);
+
+    if (!check_auth(req, name)) {
+        respond_error(drogon::k401Unauthorized, std::move(callback));
         return;
     }
 
@@ -129,77 +136,67 @@ void api::clicks(const HttpRequestPtr &req, std::function<void(const HttpRespons
 
 void api::purchase(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &name, const std::string &mod) {
     if (name.empty() || mod.empty()) {
-        auto resp = HttpResponse::newHttpResponse();
-        resp->setStatusCode(HttpStatusCode::k400BadRequest);
-        callback(resp);
+        respond_error(k400BadRequest, std::move(callback));
         return;
     }
     auto resp = HttpResponse::newHttpResponse();
-    std::string tkn = req->getHeader("Authorization");
-    if (!SessionManager::check_key_and_name(tkn, name)) {
-        resp->setStatusCode(HttpStatusCode::k401Unauthorized);
-        callback(resp);
+   
+    if (!check_auth(req, name)) {
+        respond_error(drogon::k401Unauthorized, std::move(callback));
         return;
     }
+
+    double bal = db->get_balance(name);
     if (mod == "click") {
-        double cur_mod, cur_mod_price;
-        cur_mod = db->get_click_modifier(name);
-        cur_mod_price = db->get_click_mod_price(name);
-
-        double bal = db->get_balance(name);
-        if (bal - cur_mod_price >= 0) {
-            db->set_click_mod(name, cur_mod * 1.1);
-            db->set_click_mod_price(name, cur_mod_price * 1.2);
-            db->set_balance(name, db->get_balance(name) - cur_mod_price);
-            resp->setStatusCode(HttpStatusCode::k200OK);
-        } else {
-            resp->setStatusCode(HttpStatusCode::k400BadRequest);
+        double cur_mod_price = db->get_click_mod_price(name);
+        if (bal < cur_mod_price) {
+            respond_error(k400BadRequest, std::move(callback));
+            return;
         }
 
+        double cur_mod = db->get_click_modifier(name);
+        
+        db->set_click_mod(name, cur_mod * 1.1);
+        db->set_click_mod_price(name, cur_mod_price * 1.2);
+        db->set_balance(name, db->get_balance(name) - cur_mod_price);
+        resp->setStatusCode(HttpStatusCode::k200OK);
     } else if (mod == "pay") {
-        double cur_mod, cur_mod_price;
-        cur_mod = db->get_pay_mod(name);
-        cur_mod_price = db->get_pay_mod_price(name);
-
-        double bal = db->get_balance(name);
-        if (bal - cur_mod_price >= 0) {
-            db->set_pay_mod(name, cur_mod * 1.1);
-            db->set_pay_mod_price(name, cur_mod_price * 1.2);
-            db->set_balance(name, db->get_balance(name) - cur_mod_price);
-            resp->setStatusCode(HttpStatusCode::k200OK);
-        } else {
-            resp->setStatusCode(HttpStatusCode::k400BadRequest);
-            std::cout << "bnad req\n";
+        double cur_mod_price = db->get_pay_mod_price(name);
+        if (bal < cur_mod_price) {
+            respond_error(k400BadRequest, std::move(callback));
+            return;
         }
-    } else {
-        resp->setStatusCode(HttpStatusCode::k400BadRequest);
-    }
 
+        double cur_mod = db->get_pay_mod(name);
+
+        db->set_pay_mod(name, cur_mod * 1.1);
+        db->set_pay_mod_price(name, cur_mod_price * 1.2);
+        db->set_balance(name, db->get_balance(name) - cur_mod_price);
+        resp->setStatusCode(HttpStatusCode::k200OK);
+    } 
     callback(resp);
 }
 
 void api::daily_pay(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &name) {
     if (name.empty()) {
-        auto resp = HttpResponse::newHttpResponse();
-        resp->setStatusCode(HttpStatusCode::k400BadRequest);
-        callback(resp);
-        return ;
+        respond_error(k400BadRequest, std::move(callback));
+        return;
     }
 
     auto resp = HttpResponse::newHttpResponse();
-    std::string tkn = req->getHeader("Authorization");
-    if (!SessionManager::check_key_and_name(tkn, name)) {
-        resp->setStatusCode(HttpStatusCode::k401Unauthorized);
-        callback(resp);
+    if (!check_auth(req, name)) {
+        respond_error(k401Unauthorized, std::move(callback));
         return;
     }
+
     std::string prev_time = db->get_last_pay(name);
     if (prev_time.empty()) {
         db->set_last_pay(name);
-        resp->setStatusCode(HttpStatusCode::k400BadRequest);
-        callback(resp);
+        respond_error(k400BadRequest, std::move(callback));
         return;
     }
+
+    //Counting time
     std::tm tm{};
     std::stringstream ss{prev_time};
     ss >> std::get_time(&tm, "%Y-%m-%d %H:%M:%S");
