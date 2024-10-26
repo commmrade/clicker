@@ -15,10 +15,10 @@ std::string DatabaseHandler::get_password(const std::string &name) {
     sql::ResultSet *res;
     stmt = con->createStatement();
 
-    std::string query = "SELECT * FROM users WHERE username='" + name + "'";
+    std::string query = "SELECT password FROM users WHERE username='" + name + "'";
     res = stmt->executeQuery(query);
     while (res->next()) {
-        std::string result = res->getString(3);
+        std::string result = res->getString(1);
         delete stmt;
         delete res;
         return result;
@@ -31,11 +31,11 @@ double DatabaseHandler::get_balance(const std::string &name) {
     sql::Statement *stmt;
     sql::ResultSet *res;
     stmt = con->createStatement();
-    std::string query = "SELECT * FROM game WHERE name='" + name + "'";
+    std::string query = "SELECT balance FROM game WHERE name='" + name + "'";
     res = stmt->executeQuery(query);
 
     while (res->next()) {
-        double bal = res->getDouble(2);
+        double bal = res->getDouble(1);
         delete stmt;
         delete res;
 
@@ -49,11 +49,11 @@ double DatabaseHandler::get_click_modifier(const std::string &name) {
     sql::Statement *stmt;
     sql::ResultSet *res;
     stmt = con->createStatement();
-    std::string query = "SELECT * FROM game WHERE name='" + name + "'";
+    std::string query = "SELECT click_modifier FROM game WHERE name='" + name + "'";
     res = stmt->executeQuery(query);
 
     while (res->next()) {
-        double modifier = res->getDouble(3);
+        double modifier = res->getDouble(1);
         delete stmt;
         delete res;
 
@@ -67,11 +67,11 @@ double DatabaseHandler::get_per_hour_pay(const std::string &name) {
     sql::Statement *stmt;
     sql::ResultSet *res;
     stmt = con->createStatement();
-    std::string query = "SELECT * FROM game WHERE name='" + name + "'";
+    std::string query = "SELECT per_hour_pay FROM game WHERE name='" + name + "'";
     res = stmt->executeQuery(query);
 
     while (res->next()) {
-        double payout = res->getDouble(4);
+        double payout = res->getDouble(1);
         delete stmt;
         delete res;
 
@@ -85,10 +85,10 @@ double DatabaseHandler::get_pay_mod(const std::string &name) {
     sql::Statement *stmt;
     sql::ResultSet *res;
     stmt = con->createStatement();
-    std::string query = "SELECT * FROM game WHERE name='" + name + "'";
+    std::string query = "SELECT pay_modifier FROM game WHERE name='" + name + "'";
     res = stmt->executeQuery(query);
     while (res->next()) {
-        double modifier = res->getDouble(5);
+        double modifier = res->getDouble(1);
         delete stmt;
         delete res;
         return modifier;
@@ -101,11 +101,11 @@ double DatabaseHandler::get_pay_mod_price(const std::string &name) {
     sql::Statement *stmt;
     sql::ResultSet *res;
     stmt = con->createStatement();
-    std::string query = "SELECT * FROM game WHERE name='" + name + "'";
+    std::string query = "SELECT pay_mod_price FROM game WHERE name='" + name + "'";
     res = stmt->executeQuery(query);
 
     while (res->next()) {
-        double pay = res->getDouble(8);
+        double pay = res->getDouble(1);
         delete stmt;
         delete res;
 
@@ -119,11 +119,11 @@ double DatabaseHandler::get_click_mod_price(const std::string &name) {
     sql::Statement *stmt;
     sql::ResultSet *res;
     stmt = con->createStatement();
-    std::string query = "SELECT * FROM game WHERE name='" + name + "'";
+    std::string query = "SELECT click_mod_price FROM game WHERE name='" + name + "'";
     res = stmt->executeQuery(query);
 
     while (res->next()) {
-        double price = res->getDouble(7);
+        double price = res->getDouble(1);
         delete stmt;
         delete res;
 
@@ -137,11 +137,11 @@ std::string DatabaseHandler::get_last_pay(const std::string &name) {
     sql::Statement *stmt;
     sql::ResultSet *res;
     stmt = con->createStatement();
-    std::string query = "SELECT * FROM game WHERE name='" + name + "'";
+    std::string query = "SELECT last_pay FROM game WHERE name='" + name + "'";
     res = stmt->executeQuery(query);
 
     while (res->next()) {
-        std::string last_pay = res->getString(6);
+        std::string last_pay = res->getString(1);
         delete stmt;
         delete res;
 
