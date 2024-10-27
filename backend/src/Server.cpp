@@ -32,6 +32,7 @@ bool api::check_auth(const HttpRequestPtr &request, const std::string &name) {
     return true;
 }
 void api::login(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &name, const std::string &password) {
+    std::cout << "login\n";
     if (name.empty() || password.empty()) { //If data is not correct
 
         respond_error(HttpStatusCode::k400BadRequest, std::move(callback));
