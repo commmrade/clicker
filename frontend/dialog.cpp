@@ -40,15 +40,15 @@ void Dialog::login_through_token() {
             QJsonDocument jDoc = QJsonDocument::fromJson(reply_data.toUtf8());
             QJsonObject jObj = jDoc.object();
             QSettings settings;
-            qDebug() << jObj;
+
             settings.setValue("name", jObj["name"].toString());
-            qDebug() << "Val is" << settings.value("name").toString();
+
 
             accept();
         } else if (code == 401) {
 
         } else {
-            qDebug() << code;
+
             ui->reg_btn->setText("Server is dead, wait");
             ui->login_btn->setText("Server is dead, wait");
         }
@@ -112,7 +112,7 @@ void Dialog::register_user() {
             settings.setValue("name", ui->reg_name_edit->text());
             accept();
         } else if (code == 400){
-            qDebug() << "Unknown error 400";
+
         } else {
             ui->reg_btn->setText("Server is likely to be dead, please wait");
         }

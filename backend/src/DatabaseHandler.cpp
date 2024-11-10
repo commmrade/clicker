@@ -143,7 +143,7 @@ void DatabaseHandler::set_pay_mod_price(const std::string &name, const double ne
     pstmt->executeUpdate();
 }
 void DatabaseHandler::set_balance(const std::string &name, const double sum) {
-    std::cout << sum << std::endl;
+    
     std::unique_ptr<sql::PreparedStatement> pstmt(con->prepareStatement("UPDATE game SET balance=? WHERE name=?"));
     pstmt->setDouble(1, std::round(sum * 100.0f) / 100.0f);
     pstmt->setString(2, name);
@@ -186,7 +186,7 @@ void DatabaseHandler::add_clicks(const std::string &name, int clicks) {
 
     auto balance = get_balance(name);
 
-    std::cout << "clicks " << clicks << std::endl;
+  
     std::unique_ptr<sql::PreparedStatement> pstmt(con->prepareStatement("UPDATE game SET balance=? WHERE name=?"));
     pstmt->setDouble(1, balance + std::round((clicks * get_click_modifier(name)) * 100.0f) / 100.0f);
     pstmt->setString(2, name);

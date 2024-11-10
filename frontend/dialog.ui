@@ -13,6 +13,16 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QDialog {
+    background: qlineargradient(
+        x1: 0, y1: 0, x2: 1, y2: 1,
+        stop: 0 #3a3a3a,  /* Start color (red) */
+        stop: 1 #212121   /* End color (blue) */
+    );
+}
+</string>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QStackedWidget" name="stackedWidget">
@@ -25,6 +35,9 @@
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
           <widget class="QLabel" name="usrname_label">
+           <property name="styleSheet">
+            <string notr="true">color: white;</string>
+           </property>
            <property name="text">
             <string>Username</string>
            </property>
@@ -32,6 +45,14 @@
          </item>
          <item>
           <widget class="QLineEdit" name="name_edit">
+           <property name="styleSheet">
+            <string notr="true">QLineEdit {
+	background-color: #282828;
+	color: white;
+
+
+}</string>
+           </property>
            <property name="maxLength">
             <number>16</number>
            </property>
@@ -39,6 +60,9 @@
          </item>
          <item>
           <widget class="QLabel" name="pass_label">
+           <property name="styleSheet">
+            <string notr="true">color: white;</string>
+           </property>
            <property name="text">
             <string>Password</string>
            </property>
@@ -46,6 +70,14 @@
          </item>
          <item>
           <widget class="QLineEdit" name="pass_edit">
+           <property name="styleSheet">
+            <string notr="true">QLineEdit {
+	background-color: #282828;
+	color: white;
+
+
+}</string>
+           </property>
            <property name="maxLength">
             <number>32</number>
            </property>
@@ -53,6 +85,25 @@
          </item>
          <item>
           <widget class="QPushButton" name="login_btn">
+           <property name="styleSheet">
+            <string notr="true">QPushButton {
+	background-color: #282828;
+ 	color: white;
+	border-radius: 5%;
+	border: none;
+	height: 30%;
+}
+QPushButton:hover {
+	background-color: #212121;
+
+}
+QPushButton:pressed {
+	background-color: #191919;
+	padding-left: 52%;
+}
+
+</string>
+           </property>
            <property name="text">
             <string>Login</string>
            </property>
@@ -61,7 +112,7 @@
          <item>
           <spacer name="verticalSpacer_2">
            <property name="orientation">
-            <enum>Qt::Vertical</enum>
+            <enum>Qt::Orientation::Vertical</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
@@ -73,6 +124,25 @@
          </item>
          <item>
           <widget class="QPushButton" name="switch_to_log_btn_2">
+           <property name="styleSheet">
+            <string notr="true">QPushButton {
+	background-color: #282828;
+ 	color: white;
+	border-radius: 5%;
+	border: none;
+	height: 30%;
+}
+QPushButton:hover {
+	background-color: #212121;
+
+}
+QPushButton:pressed {
+	background-color: #191919;
+	padding-left: 52%;
+}
+
+</string>
+           </property>
            <property name="text">
             <string>Sign up?</string>
            </property>
@@ -88,6 +158,9 @@
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
           <widget class="QLabel" name="label_3">
+           <property name="styleSheet">
+            <string notr="true">color: white;</string>
+           </property>
            <property name="text">
             <string>Username</string>
            </property>
@@ -95,6 +168,10 @@
          </item>
          <item>
           <widget class="QLineEdit" name="reg_name_edit">
+           <property name="styleSheet">
+            <string notr="true">background-color: #282828;
+color: white;</string>
+           </property>
            <property name="maxLength">
             <number>16</number>
            </property>
@@ -102,6 +179,9 @@
          </item>
          <item>
           <widget class="QLabel" name="label_4">
+           <property name="styleSheet">
+            <string notr="true">color: white;</string>
+           </property>
            <property name="text">
             <string>Password</string>
            </property>
@@ -109,6 +189,10 @@
          </item>
          <item>
           <widget class="QLineEdit" name="reg_pass_edit">
+           <property name="styleSheet">
+            <string notr="true">background-color: #282828;
+color: white;</string>
+           </property>
            <property name="maxLength">
             <number>32</number>
            </property>
@@ -116,6 +200,25 @@
          </item>
          <item>
           <widget class="QPushButton" name="reg_btn">
+           <property name="styleSheet">
+            <string notr="true">QPushButton {
+	background-color: #282828;
+ 	color: white;
+	border-radius: 5%;
+	border: none;
+	height: 30%;
+}
+QPushButton:hover {
+	background-color: #212121;
+
+}
+QPushButton:pressed {
+	background-color: #191919;
+	padding-left: 52%;
+}
+
+</string>
+           </property>
            <property name="text">
             <string>Register</string>
            </property>
@@ -124,7 +227,7 @@
          <item>
           <spacer name="verticalSpacer">
            <property name="orientation">
-            <enum>Qt::Vertical</enum>
+            <enum>Qt::Orientation::Vertical</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
@@ -136,6 +239,25 @@
          </item>
          <item>
           <widget class="QPushButton" name="switch_to_log_btn">
+           <property name="styleSheet">
+            <string notr="true">QPushButton {
+	background-color: #282828;
+ 	color: white;
+	border-radius: 5%;
+	border: none;
+	height: 30%;
+}
+QPushButton:hover {
+	background-color: #212121;
+
+}
+QPushButton:pressed {
+	background-color: #191919;
+	padding-left: 52%;
+}
+
+</string>
+           </property>
            <property name="text">
             <string>Already registered?</string>
            </property>

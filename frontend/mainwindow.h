@@ -56,5 +56,8 @@ private:
     void handle_server_dead();
 protected:
     void closeEvent(QCloseEvent *event);
+    void resizeEvent(QResizeEvent* event);
+
+
 };
 #endif // MAINWINDOW_H

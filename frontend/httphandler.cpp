@@ -34,6 +34,8 @@ void HttpHandler::handle_get_request(const QString &url_link, std::function<void
 
 }
 
+
+
 void HttpHandler::handle_post_request(const QString &url_link, std::function<void(int, QString)> callback, const QMap<QString, QString> &query_params, const QMap<QString, QString> &header_params) {
     QSettings settings;
     QString name = settings.value("name").toString();
@@ -55,7 +57,7 @@ void HttpHandler::handle_post_request(const QString &url_link, std::function<voi
 
     QNetworkReply *reply = manager->post(request, QByteArray());
     connect(reply, &QNetworkReply::finished, this, [callback, reply]() {
-        qDebug() << "eieie";
+
         int code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         QString data = reply->readAll();
 

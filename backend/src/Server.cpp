@@ -32,7 +32,7 @@ bool api::check_auth(const HttpRequestPtr &request, const std::string &name) {
     return true;
 }
 void api::login(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &name, const std::string &password) {
-    std::cout << "login\n";
+    
     if (name.empty() || password.empty()) { //If data is not correct
 
         respond_error(HttpStatusCode::k400BadRequest, std::move(callback));
@@ -77,7 +77,7 @@ void api::login_token(const HttpRequestPtr &req, std::function<void(const HttpRe
 
 void api::reg(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &name, const std::string &password) {
     if (name.empty() || password.empty() || name.size() > 16 || password.size() > 32) { //if data is not correct
-        std::cout << "here\n";
+    
         respond_error(k400BadRequest, std::move(callback));
         return;
     }
@@ -87,7 +87,7 @@ void api::reg(const HttpRequestPtr &req, std::function<void(const HttpResponsePt
     
     if(!db->add_user(name, bcrypt::generateHash(password))) {
         code = drogon::k400BadRequest;
-        std::cout << "there\n";
+
         js["error"] = "user already exists";
     } else {
         code = drogon::k200OK;
@@ -121,7 +121,7 @@ void api::user(const HttpRequestPtr &req, std::function<void(const HttpResponseP
 }
 
 void api::clicks(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &name, const int &click) {
-    std::cout << name << " is name \nclicks: " << click << std::endl;
+
     if (name.empty()) {
         respond_error(k400BadRequest, std::move(callback));
         return;
@@ -199,8 +199,7 @@ void api::daily_pay(const HttpRequestPtr &req, std::function<void(const HttpResp
         respond_error(k400BadRequest, std::move(callback));
         return;
     }
-    std::cout << prev_time.value() << std::endl;
-
+    
     //Counting time
     std::tm tm{};
     std::stringstream ss{prev_time.value()};
@@ -216,7 +215,7 @@ void api::daily_pay(const HttpRequestPtr &req, std::function<void(const HttpResp
     double money_total = (hrs_passed.count() * db->get_per_hour_pay(name)) * db->get_pay_mod(name);
     double balance_now = db->get_balance(name);
 
-    std::cout << money_total << " daily\n"; 
+    
     db->set_balance(name, balance_now + money_total);
     db->set_last_pay(name);
 

@@ -13,10 +13,23 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QMainWindow {
+    background: qlineargradient(
+        x1: 0, y1: 0, x2: 1, y2: 1,
+        stop: 0 #3a3a3a,  /* Start color (red) */
+        stop: 1 #212121   /* End color (blue) */
+    );
+}
+</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="QLabel" name="balance_label">
+      <property name="styleSheet">
+       <string notr="true">color: white;</string>
+      </property>
       <property name="text">
        <string>Balance is: 0$</string>
       </property>
@@ -24,26 +37,53 @@
     </item>
     <item>
      <widget class="QPushButton" name="pushButton">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+	background-color: #282828;
+ 	color: white;
+	border-radius: 50px;
+	border: none;
+	width: 100px;
+	height: 150%;
+	
+}
+QPushButton:hover {
+	background-color: #212121;
+
+}
+QPushButton:pressed {
+	background-color: #191919;
+	padding-left: 52%;
+}
+
+</string>
+      </property>
       <property name="text">
-       <string>Click</string>
+       <string/>
       </property>
      </widget>
     </item>
     <item>
      <spacer name="verticalSpacer">
       <property name="orientation">
-       <enum>Qt::Vertical</enum>
+       <enum>Qt::Orientation::Vertical</enum>
       </property>
       <property name="sizeHint" stdset="0">
        <size>
         <width>20</width>
-        <height>40</height>
+        <height>30</height>
        </size>
       </property>
      </spacer>
     </item>
     <item>
      <widget class="QLabel" name="click_mod_label">
+      <property name="styleSheet">
+       <string notr="true">color: white;</string>
+      </property>
       <property name="text">
        <string>Current price: 0</string>
       </property>
@@ -51,6 +91,25 @@
     </item>
     <item>
      <widget class="QPushButton" name="click_mod_button">
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+	background-color: #282828;
+ 	color: white;
+	border-radius: 5%;
+	border: none;
+	height: 30%;
+}
+QPushButton:hover {
+	background-color: #212121;
+
+}
+QPushButton:pressed {
+	background-color: #191919;
+	padding-left: 52%;
+}
+
+</string>
+      </property>
       <property name="text">
        <string>Upgrade for 10$</string>
       </property>
@@ -59,7 +118,7 @@
     <item>
      <spacer name="verticalSpacer_2">
       <property name="orientation">
-       <enum>Qt::Vertical</enum>
+       <enum>Qt::Orientation::Vertical</enum>
       </property>
       <property name="sizeHint" stdset="0">
        <size>
@@ -71,6 +130,9 @@
     </item>
     <item>
      <widget class="QLabel" name="pay_mod_label">
+      <property name="styleSheet">
+       <string notr="true">color: white;</string>
+      </property>
       <property name="text">
        <string>Current price: 0</string>
       </property>
@@ -78,6 +140,25 @@
     </item>
     <item>
      <widget class="QPushButton" name="pay_mod_button">
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+	background-color: #282828;
+ 	color: white;
+	border-radius: 5%;
+	border: none;
+	height: 30%;
+}
+QPushButton:hover {
+	background-color: #212121;
+
+}
+QPushButton:pressed {
+	background-color: #191919;
+	padding-left: 52%;
+}
+
+</string>
+      </property>
       <property name="text">
        <string>Upgrade for 10$</string>
       </property>
@@ -85,6 +166,25 @@
     </item>
     <item>
      <widget class="QPushButton" name="log_out_btn">
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+	background-color: #282828;
+ 	color: white;
+	border-radius: 5%;
+	border: none;
+	height: 30%;
+}
+QPushButton:hover {
+	background-color: #212121;
+
+}
+QPushButton:pressed {
+	background-color: #191919;
+	padding-left: 52%;
+}
+
+</string>
+      </property>
       <property name="text">
        <string>Exit</string>
       </property>
