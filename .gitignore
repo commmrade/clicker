@@ -1,2 +1,4 @@
 backend/build
 frontend/build
+backend/.cache
+frontend/.cache
