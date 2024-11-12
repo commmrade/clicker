@@ -34,7 +34,7 @@ public:
     METHOD_ADD(api::daily_pay, "/daily-pay", Post);
     METHOD_ADD(api::purchase, "/purchase?name={username}&modf={modifier}", Post);
     METHOD_ADD(api::login_token, "/login?token={tkn}", Get);
-    //TODO pay method that will add offline money
+    
    
     METHOD_LIST_END
 

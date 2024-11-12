@@ -228,7 +228,7 @@ void api::daily_pay(const HttpRequestPtr &req, std::function<void(const HttpResp
         return;
     }
 
-    auto resp = HttpResponse::newHttpResponse();
+    
     if (!check_auth(req, name)) {
         respond_error(k401Unauthorized, std::move(callback));
         return;
@@ -259,7 +259,7 @@ void api::daily_pay(const HttpRequestPtr &req, std::function<void(const HttpResp
     
     db->set_balance(name, balance_now + money_total);
     db->set_last_pay(name);
-
+    auto resp = HttpResponse::newHttpResponse();
     resp->setStatusCode(HttpStatusCode::k200OK);
     callback(resp);
 }
