@@ -27,28 +27,28 @@ public:
     
     METHOD_LIST_BEGIN
 
-    METHOD_ADD(api::login, "/login?name={username}&password={pass}", Get);
-    METHOD_ADD(api::reg, "/reg?name={username}&password={pass}", Post);
+    METHOD_ADD(api::login, "/login", Post);
+    METHOD_ADD(api::reg, "/reg", Post);
     METHOD_ADD(api::user, "/user?name={username}", Get);
-    METHOD_ADD(api::clicks, "/clicks?name={username}&click={clck}", Post);
-    METHOD_ADD(api::daily_pay, "/daily-pay?name={username}", Post);
+    METHOD_ADD(api::clicks, "/clicks", Post);
+    METHOD_ADD(api::daily_pay, "/daily-pay", Post);
     METHOD_ADD(api::purchase, "/purchase?name={username}&modf={modifier}", Post);
-    METHOD_ADD(api::login_token, "/login_t?token={tkn}", Get);
+    METHOD_ADD(api::login_token, "/login?token={tkn}", Get);
     //TODO pay method that will add offline money
    
     METHOD_LIST_END
 
     
 protected:
-    void login(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &name, const std::string &password);
+    void login(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
     void login_token(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &token);
-    void reg(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &name, const std::string &password);
+    void reg(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
 
     void user(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &name);
 
-    void clicks(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &name, const int &click);
+    void clicks(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
     void purchase(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &name, const std::string &mod);
-    void daily_pay(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &name);
+    void daily_pay(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
 
     void respond_error(HttpStatusCode code, std::function<void(const HttpResponsePtr &)> &&callback);
     void respond_error(HttpStatusCode code, std::function<void(const HttpResponsePtr &)> &&callback, Json::Value js);

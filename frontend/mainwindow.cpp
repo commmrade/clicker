@@ -55,6 +55,8 @@ MainWindow::~MainWindow()
     //save_clicks();
     //qDebug() << "success";
     //delete manager;
+    qDebug() << "Dstr";
+    save_clicks();
     delete handler;
     delete ui;
 }
@@ -126,11 +128,14 @@ void MainWindow::get_user_info() {
 void MainWindow::daily_payment() {
     QSettings settings;
 
-    QMap<QString, QString> query_par;
-    query_par.insert("name", settings.value("name").toString());
+
 
     QMap<QString, QString> header_par;
     header_par.insert("Authorization", settings.value("token").toString());
+
+    QJsonObject j_obj;
+    j_obj["name"] = settings.value("name").toString();
+
 
     handler->handle_post_request("http://127.0.0.1:8848/api/daily-pay", [this](int code, QString reply_data) {
         if (code == 200) {
@@ -152,7 +157,7 @@ void MainWindow::daily_payment() {
             qDebug() << "Backend server is dead";
             handle_server_dead();
         }
-    }, query_par, header_par);
+    }, {}, header_par, j_obj);
 }
 
 void MainWindow::purchase_modifier(const QString &name, const QString &mod_type) {
@@ -211,15 +216,17 @@ void MainWindow::purchase_modifier(const QString &name, const QString &mod_type)
 
 void MainWindow::save_clicks() {
 
-    if (clicks < 0) {
+    if (clicks <= 0) {
+        emit save_completed();
         return;
     }
-
+    qDebug() << "didnt return" << clicks;
     QSettings settings;
 
-    QMap<QString, QString> query_par;
-    query_par.insert("name", settings.value("name").toString());
-    query_par.insert("click", QString::number(clicks));
+
+    QJsonObject json_obj;
+    json_obj["name"] = settings.value("name").toString();
+    json_obj["click"] = QString::number(clicks);
 
     QMap<QString, QString> header_par;
     header_par.insert("Authorization", settings.value("token").toString());
@@ -239,12 +246,13 @@ void MainWindow::save_clicks() {
 
             exit(1);
         } else if (code == 400){
-
+            qDebug() << "why";
         } else {
             handle_server_dead();
         }
-        }, query_par, header_par);
-
+        emit save_completed();
+    }, {}, header_par, json_obj);
+    qDebug() << "eof";
 }
 void MainWindow::on_pushButton_clicked()
 {
@@ -256,11 +264,20 @@ void MainWindow::on_pushButton_clicked()
     raw_clicks++;
 
     update_balance();
+
+
 }
 void MainWindow::closeEvent(QCloseEvent *event) {
-    event->accept();
+    QEventLoop loop;
+    connect(this, &MainWindow::save_completed, &loop, &QEventLoop::quit);
+
     save_clicks();
+
+    loop.exec();
+
+    event->accept();
 }
+
 
 
 void MainWindow::on_pay_mod_button_clicked()

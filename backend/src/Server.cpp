@@ -1,11 +1,16 @@
 #include <cstdio>
 #include <drogon/HttpResponse.h>
 #include <drogon/HttpTypes.h>
+#include <json/reader.h>
+#include <json/value.h>
 #include<klewy/Server.hpp>
 #include <memory>
 #include <utility>
 
-
+#define DEBUG
+#ifdef DEBUG
+#define log(X) std::cout << X << std::endl
+#endif
 
 api::api() {
     db = std::make_unique<DatabaseHandler>("tcp://127.0.0.1:3306", "klewy", "root", "clicker");
@@ -31,29 +36,40 @@ bool api::check_auth(const HttpRequestPtr &request, const std::string &name) {
     }
     return true;
 }
-void api::login(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &name, const std::string &password) {
+void api::login(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
+    std::cout << req->body() << std::endl;
+    auto json_obj = req->getJsonObject();
     
-    if (name.empty() || password.empty()) { //If data is not correct
+    if (!json_obj) {
+        log("Empty why??");
+        respond_error(HttpStatusCode::k400BadRequest, std::move(callback));
+        
+        return;
+    }
+   
+    const std::string name = (*json_obj)["name"].asString();
+    const std::string password = (*json_obj)["password"].asString();
 
+    if (name.empty() || password.empty()) { //If data is not correct
         respond_error(HttpStatusCode::k400BadRequest, std::move(callback));
         return;
     }
 
 
     Json::Value js;
-    HttpStatusCode code;
     
     auto passwd = db->get_password(name);
     if (passwd) { //User does exist
-        if (bcrypt::validatePassword(password, passwd.value())) /*TODO: make sha256 pass*/ {
-            code = drogon::k200OK;
+        if (bcrypt::validatePassword(password, passwd.value())) {
             js["token"] = SessionManager::make_key(name);
         } else {
-            code = drogon::k400BadRequest;
+            respond_error(drogon::k401Unauthorized, std::move(callback));
         }
     } else { 
-        code = k400BadRequest;
+        respond_error(k400BadRequest, std::move(callback));
     }
+
+    HttpStatusCode code = drogon::k200OK;
     auto resp = HttpResponse::newHttpJsonResponse(js);
     resp->setStatusCode(code);
     callback(resp);
@@ -69,34 +85,42 @@ void api::login_token(const HttpRequestPtr &req, std::function<void(const HttpRe
         respond_error(k401Unauthorized, std::move(callback));
         return;
     }
+    
     js["name"] = SessionManager::get_name(token);
     auto response = HttpResponse::newHttpJsonResponse(js);
     response->setStatusCode(HttpStatusCode::k200OK);
+    
     callback(response);
 }
 
-void api::reg(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &name, const std::string &password) {
+void api::reg(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
+    auto json_obj = req->getJsonObject();
+
+    if (json_obj->empty()) {
+        respond_error(drogon::k400BadRequest, std::move(callback));
+        return;
+    }
+
+    const std::string name = (*json_obj)["name"].asString();
+    const std::string password = (*json_obj)["password"].asString();
+
     if (name.empty() || password.empty() || name.size() > 16 || password.size() > 32) { //if data is not correct
-    
         respond_error(k400BadRequest, std::move(callback));
         return;
     }
 
-    Json::Value js;
-    HttpStatusCode code;
-    
     if(!db->add_user(name, bcrypt::generateHash(password))) {
-        code = drogon::k400BadRequest;
+        respond_error(k400BadRequest, std::move(callback));
+        return;
+    } 
 
-        js["error"] = "user already exists";
-    } else {
-        code = drogon::k200OK;
-        js["token"] = SessionManager::make_key(name);
-    }
+    Json::Value js;
+    HttpStatusCode code = drogon::k200OK;
     
-
+    js["token"] = SessionManager::make_key(name);
     auto response = HttpResponse::newHttpJsonResponse(js);
     response->setStatusCode(code);
+
     callback(response);
 }
 
@@ -120,14 +144,21 @@ void api::user(const HttpRequestPtr &req, std::function<void(const HttpResponseP
     callback(response);
 }
 
-void api::clicks(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &name, const int &click) {
+void api::clicks(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
+    auto json_obj = req->jsonObject();
+    
 
-    if (name.empty()) {
+    if (!json_obj) {
+        respond_error(drogon::k400BadRequest, std::move(callback));
+        return;
+    }
+    const std::string name = (*json_obj)["name"].asString();
+    const int click = std::stoi((*json_obj)["click"].asString());
+    
+    if (name.empty() || click == 0) {
         respond_error(k400BadRequest, std::move(callback));
         return;
     }
-
-    auto resp = HttpResponse::newHttpResponse();
 
     if (!check_auth(req, name)) {
         respond_error(drogon::k401Unauthorized, std::move(callback));
@@ -135,6 +166,7 @@ void api::clicks(const HttpRequestPtr &req, std::function<void(const HttpRespons
     }
 
     db->add_clicks(name, click);
+    auto resp = HttpResponse::newHttpResponse();
     callback(resp);
 }
 
@@ -143,14 +175,15 @@ void api::purchase(const HttpRequestPtr &req, std::function<void(const HttpRespo
         respond_error(k400BadRequest, std::move(callback));
         return;
     }
-    auto resp = HttpResponse::newHttpResponse();
+    
    
     if (!check_auth(req, name)) {
         respond_error(drogon::k401Unauthorized, std::move(callback));
         return;
     }
-
+    auto resp = HttpResponse::newHttpResponse();
     double bal = db->get_balance(name);
+
     if (mod == "click") {
         double cur_mod_price = db->get_click_mod_price(name);
         if (bal < cur_mod_price) {
@@ -181,7 +214,15 @@ void api::purchase(const HttpRequestPtr &req, std::function<void(const HttpRespo
     callback(resp);
 }
 
-void api::daily_pay(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &name) {
+void api::daily_pay(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
+    auto json_obj = req->getJsonObject();
+
+    if (!json_obj) {
+        respond_error(drogon::k400BadRequest, std::move(callback));
+    }
+
+    const std::string name = (*json_obj)["name"].asString();
+
     if (name.empty()) {
         respond_error(k400BadRequest, std::move(callback));
         return;

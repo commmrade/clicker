@@ -57,7 +57,8 @@ private:
 protected:
     void closeEvent(QCloseEvent *event);
     void resizeEvent(QResizeEvent* event);
-
+signals:
+    void save_completed();
 
 };
 #endif // MAINWINDOW_H

@@ -36,10 +36,10 @@ void HttpHandler::handle_get_request(const QString &url_link, std::function<void
 
 
 
-void HttpHandler::handle_post_request(const QString &url_link, std::function<void(int, QString)> callback, const QMap<QString, QString> &query_params, const QMap<QString, QString> &header_params) {
+void HttpHandler::handle_post_request(const QString &url_link, std::function<void(int, QString)> callback, const QMap<QString, QString> &query_params, const QMap<QString, QString> &header_params, const QJsonObject &json_obj) {
     QSettings settings;
     QString name = settings.value("name").toString();
-
+    qDebug() << query_params;
     QUrl url(url_link);
     QUrlQuery query;
 
@@ -49,17 +49,19 @@ void HttpHandler::handle_post_request(const QString &url_link, std::function<voi
     url.setQuery(query);
 
     QNetworkRequest request(url);
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
     for (auto it = header_params.begin(); it != header_params.end(); ++it) {
         request.setRawHeader(it.key().toUtf8(), it.value().toUtf8());
     }
+    qDebug() << url;
 
-    QNetworkReply *reply = manager->post(request, QByteArray());
-    connect(reply, &QNetworkReply::finished, this, [callback, reply]() {
-
+    QJsonDocument json_doc(json_obj);
+    QNetworkReply *reply = manager->post(request, QString{json_doc.toJson(QJsonDocument::Compact)}.toUtf8());
+    connect(reply, &QNetworkReply::finished, this, [query_params, callback, reply]() {
         int code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         QString data = reply->readAll();
+        qDebug() << "Foo " << query_params;
 
         callback(code, data);
         reply->deleteLater();

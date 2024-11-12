@@ -35,7 +35,7 @@ void Dialog::login_through_token() {
     QMap<QString, QString> query_params;
     query_params.insert("token", token);
 
-    handler->handle_get_request("http://127.0.0.1:8848/api/login_t", [this](int code, QString reply_data) {
+    handler->handle_get_request("http://127.0.0.1:8848/api/login", [this](int code, QString reply_data) {
         if (code == 200) {
             QJsonDocument jDoc = QJsonDocument::fromJson(reply_data.toUtf8());
             QJsonObject jObj = jDoc.object();
@@ -96,12 +96,11 @@ void Dialog::register_user() {
         ui->reg_pass_edit->setPlaceholderText("Must be shorter than 32");
     }
 
+    QJsonObject json_obj;
+    json_obj["name"] = ui->reg_name_edit->text();
+    json_obj["password"] = ui->reg_pass_edit->text();
 
-    QMap<QString, QString> query_par;
-    QMap<QString, QString> header_par;
 
-    query_par.insert("name", ui->reg_name_edit->text());
-    query_par.insert("password", ui->reg_pass_edit->text());
 
     handler->handle_post_request("http://127.0.0.1:8848/api/reg", [this](int code, QString reply_data) {
         if (code == 200) {
@@ -116,7 +115,7 @@ void Dialog::register_user() {
         } else {
             ui->reg_btn->setText("Server is likely to be dead, please wait");
         }
-    }, query_par, header_par);
+    }, {}, {}, json_obj);
 
 
 }
@@ -135,12 +134,12 @@ void Dialog::login_user() {
         ui->pass_edit->setPlaceholderText("Must be shorter than 32");
     }
 
-    QMap<QString, QString> query_par;
 
-    query_par.insert("name", ui->name_edit->text());
-    query_par.insert("password", ui->pass_edit->text());
+    QJsonObject json_obj;
+    json_obj["name"] = ui->name_edit->text();
+    json_obj["password"] = ui->pass_edit->text();
 
-    handler->handle_get_request("http://127.0.0.1:8848/api/login", [this](int code, QString reply_data) {
+    handler->handle_post_request("http://127.0.0.1:8848/api/login", [this](int code, QString reply_data) {
         if (code == 200) {
             QJsonDocument jDoc = QJsonDocument::fromJson(reply_data.toUtf8());
             QJsonObject jObj = jDoc.object();
@@ -156,6 +155,6 @@ void Dialog::login_user() {
         } else {
             ui->login_btn->setText("Server is dead, please wait");
         }
-    }, query_par);
+    }, {}, {}, json_obj);
 }
 
