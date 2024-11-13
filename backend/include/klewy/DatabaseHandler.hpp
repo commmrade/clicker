@@ -11,6 +11,15 @@
 #include <jdbc/cppconn/prepared_statement.h>
 #include <sstream>
 
+
+struct Modifiers {
+    double click_modifier;
+    double click_mod_price;      
+    double hourly_payment;    
+    double hourly_payment_price;
+    double hourly_payment_mod;
+};
+
 class DatabaseHandler {
 private:
     sql::Driver *driver;
@@ -21,12 +30,12 @@ public:
     ~DatabaseHandler();
 
     std::optional<std::string> get_password(const std::string &name);
+    std::optional<int> get_userid(const std::string &name);
+
+    
     double get_balance(const std::string &name);
-    double get_click_modifier(const std::string &name);
-    double get_per_hour_pay(const std::string &name);
-    double get_pay_mod(const std::string &name);
-    double get_pay_mod_price(const std::string &name);
-    double get_click_mod_price(const std::string &name);
+
+    std::optional<Modifiers> get_modifiers(const std::string &name);
     std::optional<std::string> get_last_pay(const std::string &name);
 
     void set_click_mod(const std::string &name, const double new_click_mod);

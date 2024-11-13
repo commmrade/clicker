@@ -50,8 +50,8 @@ protected:
     void purchase(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
     void daily_pay(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
 
-    void respond_error(HttpStatusCode code, std::function<void(const HttpResponsePtr &)> &&callback);
-    void respond_error(HttpStatusCode code, std::function<void(const HttpResponsePtr &)> &&callback, Json::Value js);
+    void respond(HttpStatusCode code, std::function<void(const HttpResponsePtr &)> &&callback);
+    void respond(HttpStatusCode code, std::function<void(const HttpResponsePtr &)> &&callback, Json::Value js);
 
     bool check_auth(const HttpRequestPtr &request, const std::string &name);
 };

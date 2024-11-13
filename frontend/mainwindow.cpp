@@ -26,11 +26,6 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-
-
-
-
-    //manager = new QNetworkAccessManager();
     handler = new HttpHandler();
 
     get_user_info();
@@ -38,12 +33,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     update_balance();
 
-
     QIcon icon("/home/klewy/Pictures/Screenshots/a.png");
     ui->pushButton->setIcon(icon);
-    // ui->pushButton->setIconSize({ui->pushButton->geometry().width(), ui->pushButton->geometry().height()});
-
-
 }
 
 void MainWindow::resizeEvent(QResizeEvent* event) {
@@ -52,17 +43,13 @@ void MainWindow::resizeEvent(QResizeEvent* event) {
 
 MainWindow::~MainWindow()
 {
-    //save_clicks();
-    //save_clicks();
-    //qDebug() << "success";
-    //delete manager;
     qDebug() << "Dstr";
     save_clicks();
     delete handler;
     delete ui;
 }
 void MainWindow::handle_server_dead() {
-    // Create a modal dialog
+    
     setEnabled(false);
     ui->click_mod_button->setText("Server is dead, wait");
     ui->pay_mod_button->setText("Serve is dead, please wait");
@@ -78,7 +65,7 @@ void MainWindow::handle_server_dead() {
                 if (code == 200) {
                     // Handle successful response
                     setEnabled(true);
-                    timer->stop(); // Stop the timer
+                    timer->stop();
                 } else if (code == 400) {
                     // Handle specific error response
                 }
@@ -100,8 +87,6 @@ void MainWindow::get_user_info() {
 
     handler->handle_get_request("http://127.0.0.1:8848/api/user",
         [this](int code, QString reply_data) {
-
-            // Handle the response here
 
             if (code == 200) {
                 QJsonDocument jDoc = QJsonDocument::fromJson(reply_data.toUtf8());
@@ -221,10 +206,7 @@ void MainWindow::save_clicks() {
         emit save_completed();
         return;
     }
- 
-
     QSettings settings;
-
 
     QJsonObject json_obj;
     json_obj["name"] = settings.value("name").toString();

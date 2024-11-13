@@ -2,9 +2,10 @@
 #include <chrono>
 #include <exception>
 #include <klewy/SessionManager.hpp>
+#include <stdexcept>
 
 
-std::string SessionManager::make_key(const std::string &name) {
+std::string SessionManager::make_token(const std::string &name) {
     std::string secret_key {"vladivostok1488"};
 
     auto token = jwt::create()
@@ -15,7 +16,7 @@ std::string SessionManager::make_key(const std::string &name) {
 
     return token;
 }
-bool SessionManager::check_key_and_name(const std::string &key, const std::string &name) {
+bool SessionManager::check_token_and_name(const std::string &key, const std::string &name) {
     std::string secret_key {"vladivostok1488"};
     try {
         auto decoded = jwt::decode(key);
@@ -38,7 +39,7 @@ bool SessionManager::check_key_and_name(const std::string &key, const std::strin
 
     return false;
 } 
-bool SessionManager::check_key(const std::string &key) {
+bool SessionManager::check_token(const std::string &key) {
     std::string secret_key {"vladivostok1488"};
 
     try {
@@ -57,14 +58,14 @@ bool SessionManager::check_key(const std::string &key) {
     }
     return false;
 }
-std::string SessionManager::get_name(const std::string &key) {
+std::string SessionManager::get_name_from_token(const std::string &key) {
     std::string result;
 
     try {
         auto decoded = jwt::decode(key);
         result = decoded.get_payload_claim("name").as_string();
     } catch (...) {
-        std::cout << "exc\n";
+        throw std::runtime_error("Invald token");
     }
     return result;
 }
