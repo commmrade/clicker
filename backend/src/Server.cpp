@@ -170,7 +170,16 @@ void api::clicks(const HttpRequestPtr &req, std::function<void(const HttpRespons
     callback(resp);
 }
 
-void api::purchase(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &name, const std::string &mod) {
+void api::purchase(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
+    auto json_obj = req->getJsonObject();
+
+    if (!json_obj) {
+        respond_error(drogon::k400BadRequest, std::move(callback));
+    }
+
+    const std::string name = (*json_obj)["name"].asString();
+    const std::string mod = (*json_obj)["modifier_type"].asString();
+
     if (name.empty() || mod.empty()) {
         respond_error(k400BadRequest, std::move(callback));
         return;
@@ -181,6 +190,7 @@ void api::purchase(const HttpRequestPtr &req, std::function<void(const HttpRespo
         respond_error(drogon::k401Unauthorized, std::move(callback));
         return;
     }
+
     auto resp = HttpResponse::newHttpResponse();
     double bal = db->get_balance(name);
 
@@ -195,7 +205,8 @@ void api::purchase(const HttpRequestPtr &req, std::function<void(const HttpRespo
         
         db->set_click_mod(name, cur_mod * 1.1);
         db->set_click_mod_price(name, cur_mod_price * 1.2);
-        db->set_balance(name, db->get_balance(name) - cur_mod_price);
+
+        db->set_balance(name, bal - cur_mod_price);
         resp->setStatusCode(HttpStatusCode::k200OK);
     } else if (mod == "pay") {
         double cur_mod_price = db->get_pay_mod_price(name);
@@ -208,7 +219,7 @@ void api::purchase(const HttpRequestPtr &req, std::function<void(const HttpRespo
 
         db->set_pay_mod(name, cur_mod * 1.1);
         db->set_pay_mod_price(name, cur_mod_price * 1.2);
-        db->set_balance(name, db->get_balance(name) - cur_mod_price);
+        db->set_balance(name, bal - cur_mod_price);
         resp->setStatusCode(HttpStatusCode::k200OK);
     } 
     callback(resp);

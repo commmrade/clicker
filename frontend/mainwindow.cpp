@@ -12,6 +12,7 @@
 #include<QSettings>
 #include<QMessageBox>
 #include<QCloseEvent>
+#include <qjsonobject.h>
 #include<thread>
 #include<QUrlQuery>
 #include "dialog.h"
@@ -166,9 +167,9 @@ void MainWindow::purchase_modifier(const QString &name, const QString &mod_type)
     }
     QSettings settings;
 
-    QMap<QString, QString> query_par;
-    query_par.insert("name", settings.value("name").toString());
-    query_par.insert("modf", mod_type);
+    QJsonObject json_obj;
+    json_obj["name"] = settings.value("name").toString();
+    json_obj["modifier_type"] = mod_type;
 
     QMap<QString, QString> header_par;
     header_par.insert("Authorization", settings.value("token").toString());
@@ -193,14 +194,14 @@ void MainWindow::purchase_modifier(const QString &name, const QString &mod_type)
                     std::this_thread::sleep_for(std::chrono::seconds(2));
                     ui->click_mod_button->setText("Upgrade for: " + QString::number(click_mod_price) + "$");
                 });
-                thr.detach(); //Temporarily set text to not enough money (async)
+                thr.detach(); // Temporarily set text to not enough money (async)
             } else if (mod_type == "pay") {
                 ui->pay_mod_button->setText("Not enough money");
                 std::thread thr([this]() {
                     std::this_thread::sleep_for(std::chrono::seconds(2));
                     ui->pay_mod_button->setText("Upgrade for: " + QString::number(hourly_pay_mod_price) + "$");
                 });
-                thr.detach(); //Temporarily set text to not enough money (async)
+                thr.detach(); // Temporarily set text to not enough money (async)
             } else {
                 qDebug() << "Purchase POST what??";
             }
@@ -209,7 +210,7 @@ void MainWindow::purchase_modifier(const QString &name, const QString &mod_type)
             ui->click_mod_button->setText("Server is likely to be dead, please wait");
             ui->pay_mod_button->setText("Server is likely to be dead, please wait");
         }
-        }, query_par, header_par);
+        }, {}, header_par, json_obj);
 }
 
 
@@ -220,7 +221,8 @@ void MainWindow::save_clicks() {
         emit save_completed();
         return;
     }
-    qDebug() << "didnt return" << clicks;
+ 
+
     QSettings settings;
 
 
@@ -246,13 +248,12 @@ void MainWindow::save_clicks() {
 
             exit(1);
         } else if (code == 400){
-            qDebug() << "why";
+            qDebug() << "Clicks 400 error";
         } else {
             handle_server_dead();
         }
         emit save_completed();
     }, {}, header_par, json_obj);
-    qDebug() << "eof";
 }
 void MainWindow::on_pushButton_clicked()
 {

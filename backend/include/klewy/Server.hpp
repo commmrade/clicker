@@ -32,7 +32,7 @@ public:
     METHOD_ADD(api::user, "/user?name={username}", Get);
     METHOD_ADD(api::clicks, "/clicks", Post);
     METHOD_ADD(api::daily_pay, "/daily-pay", Post);
-    METHOD_ADD(api::purchase, "/purchase?name={username}&modf={modifier}", Post);
+    METHOD_ADD(api::purchase, "/purchase", Post);
     METHOD_ADD(api::login_token, "/login?token={tkn}", Get);
     
    
@@ -47,7 +47,7 @@ protected:
     void user(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &name);
 
     void clicks(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
-    void purchase(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &name, const std::string &mod);
+    void purchase(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
     void daily_pay(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
 
     void respond_error(HttpStatusCode code, std::function<void(const HttpResponsePtr &)> &&callback);
