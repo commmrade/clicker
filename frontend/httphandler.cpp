@@ -22,13 +22,15 @@ void HttpHandler::handle_get_request(const QString &url_link, std::function<void
     QNetworkRequest request(url);
     QNetworkReply *reply = manager->get(request);
     connect(reply, &QNetworkReply::finished, this, [callback, reply]() {
+        
         int code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         QString data = reply->readAll();
         //qDebug() << "code is " << code;
-
+       
         callback(code, data);
-
+        
         reply->deleteLater();
+        
     });
 
 

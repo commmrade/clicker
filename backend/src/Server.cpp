@@ -78,6 +78,7 @@ void api::login_token(const HttpRequestPtr &req, std::function<void(const HttpRe
     }
 
     if (!SessionManager::check_token(token)) {
+        std::cout << "end\n";
         respond(k401Unauthorized, std::move(callback));
         return;
     }
