@@ -3,8 +3,11 @@
 
 #include <QMainWindow>
 #include<QNetworkAccessManager>
+#include <memory>
 #include<unordered_map>
-#include "httphandler.h"
+#include "usermanager.h"
+
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -30,35 +33,31 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    int clicks;
-    int raw_clicks;
-    double raw_total;
+ 
     //double balance;
 
     //QNetworkAccessManager *manager;
-    HttpHandler *handler;
+    
 
 
-    //std::unordered_map<std::string, QString> user_info;
-    void get_user_info();
-    double balance;
-    double click_mod;
-    double hourly_pay_mod;
-    double click_mod_price;
-    double hourly_pay_mod_price;
+    std::unique_ptr<UserManager> user_manager;
 
-    void purchase_modifier(const QString &name, const QString &mod_type);
+    //void get_user_info();
+  
 
-    void save_clicks();
-    void update_balance();
-    void daily_payment();
+
+    
 
     void handle_server_dead();
 protected:
     void closeEvent(QCloseEvent *event);
     void resizeEvent(QResizeEvent* event);
 signals:
-    void save_completed();
+
+public slots:
+    void update_balance();
+    void error_handler(KindError error_type);
+ 
 
 };
 #endif // MAINWINDOW_H

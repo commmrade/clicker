@@ -168,7 +168,7 @@ void api::clicks(const HttpRequestPtr &req, std::function<void(const HttpRespons
         respond(drogon::k401Unauthorized, std::move(callback));
         return;
     }
-
+    std::cout << click << std::endl;
     db->add_clicks(name, click);
    
     respond(drogon::k200OK, std::move(callback));

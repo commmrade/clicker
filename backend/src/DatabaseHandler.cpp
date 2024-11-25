@@ -126,7 +126,7 @@ void DatabaseHandler::set_pay_mod(const std::string &name, const double new_pay_
         return;
     }
 
-    std::unique_ptr<sql::PreparedStatement> pstmt(con->prepareStatement("UPDATE modifiers SET pay_modifier=? WHERE user_id=?"));
+    std::unique_ptr<sql::PreparedStatement> pstmt(con->prepareStatement("UPDATE modifiers SET hourly_payment_mod=? WHERE user_id=?"));
     pstmt->setDouble(1, std::round(cur_pay_mod * 100.0f) / 100.0f);
     pstmt->setInt(2, user_id.value());
     pstmt->executeUpdate();
@@ -154,7 +154,7 @@ void DatabaseHandler::set_pay_mod_price(const std::string &name, const double ne
         return;
     }
 
-    std::unique_ptr<sql::PreparedStatement> pstmt(con->prepareStatement("UPDATE modifiers SET pay_mod_price=? WHERE user_id=?"));
+    std::unique_ptr<sql::PreparedStatement> pstmt(con->prepareStatement("UPDATE modifiers SET hourly_payment_price=? WHERE user_id=?"));
     pstmt->setDouble(1, std::round(cur_pay_mod_price * 100.0f) / 100.0f);
     pstmt->setInt(2, user_id.value());
     pstmt->executeUpdate();
