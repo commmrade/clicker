@@ -44,9 +44,7 @@ bool SessionManager::check_token(const std::string &key) {
 
     try {
         auto decoded = jwt::decode(key);
-        if (decoded.get_payload_claim("name").as_string().empty()) {
-            return false;
-        }
+
 
         auto verifier = jwt::verify().allow_algorithm(jwt::algorithm::hs256{secret_key});
 

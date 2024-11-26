@@ -1,4 +1,5 @@
 #include "dialog.h"
+#include "authmanager.h"
 #include "ui_dialog.h"
 #include <QNetworkRequest>
 #include <QNetworkReply>
@@ -9,10 +10,13 @@
 #include <QDebug>
 #include<QUrlQuery>
 #include<QSettings>
+#include <memory>
+#include <qmessagebox.h>
 
 Dialog::Dialog(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::Dialog)
+    , auth_manager(std::make_unique<authmanager>())
 {
     ui->setupUi(this);
     handler = new HttpHandler();
@@ -106,22 +110,8 @@ void Dialog::register_user() {
 
 
 
-    handler->handle_post_request("http://127.0.0.1:8848/api/reg", [this](int code, QString reply_data) {
-        if (code == 200) {
-            QJsonDocument jDoc = QJsonDocument::fromJson(reply_data.toUtf8());
-            QJsonObject jObj = jDoc.object();
-            QSettings settings;
-            settings.setValue("token", jObj["token"].toString());
-            settings.setValue("name", ui->reg_name_edit->text());
-            accept();
-        } else if (code == 400){
-
-        } else {
-            ui->reg_btn->setText("Server is likely to be dead, please wait");
-        }
-    }, {}, {}, json_obj);
-
-
+    connect(auth_manager.get(), &authmanager::auth_attempt, this, &Dialog::auth);
+    auth_manager->reg(ui->reg_name_edit->text(), ui->reg_pass_edit->text());
 }
 void Dialog::login_user() {
     if (ui->name_edit->text().size() < 3) {
@@ -139,26 +129,21 @@ void Dialog::login_user() {
     }
 
 
-    QJsonObject json_obj;
-    json_obj["name"] = ui->name_edit->text();
-    json_obj["password"] = ui->pass_edit->text();
 
-    handler->handle_post_request("http://127.0.0.1:8848/api/login", [this](int code, QString reply_data) {
-        if (code == 200) {
-            QJsonDocument jDoc = QJsonDocument::fromJson(reply_data.toUtf8());
-            QJsonObject jObj = jDoc.object();
-            QSettings settings;
-            settings.setValue("token", jObj["token"].toString());
-            settings.setValue("name", ui->name_edit->text());
-
-            accept();
-        } else if (code == 400){
-
-            qDebug() << "LOGIN CODE" << code;
-            ui->login_btn->setText("Wrong password or username");
-        } else {
-            ui->login_btn->setText("Server is dead, please wait");
-        }
-    }, {}, {}, json_obj);
+    connect(auth_manager.get(), &authmanager::auth_attempt, this, &Dialog::auth);
+    auth_manager->login(ui->name_edit->text(), ui->pass_edit->text());
 }
 
+void Dialog::auth(bool success) {
+    if (success) {
+        accept();
+    } else {
+        QMessageBox box;
+        box.setWindowTitle("Warning");
+        box.setIcon(QMessageBox::Critical);
+        box.setStandardButtons(QMessageBox::Ok);
+        box.setText("Authorization error");
+
+        int res = box.exec();
+    }
+}

@@ -37,8 +37,20 @@ bool api::check_auth(const HttpRequestPtr &request, const std::string &name) {
     }
     return true;
 }
+
+bool api::check_auth(const HttpRequestPtr &request) {
+    auto resp = HttpResponse::newHttpResponse();
+    std::string tkn = request->getHeader("Authorization");
+
+    if (!SessionManager::check_token(tkn)) {
+        return false;
+    }
+    return true;
+}
+
+
+
 void api::login(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
-    std::cout << req->body() << std::endl;
     auto json_obj = req->getJsonObject();
     
     if (!json_obj) {
@@ -124,10 +136,17 @@ void api::reg(const HttpRequestPtr &req, std::function<void(const HttpResponsePt
 }
 
 void api::user(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &name) {
+
+    if (!check_auth(req)) {
+        respond(drogon::k401Unauthorized, std::move(callback));
+        return;
+    }
+
     if (name.empty()) {
         respond(k400BadRequest, std::move(callback));
         return;
     }
+
     auto mods = db->get_modifiers(name);
 
     if (!mods) {

@@ -7,7 +7,7 @@ HttpHandler::~HttpHandler() {
     delete manager;
 }
 
-void HttpHandler::handle_get_request(const QString &url_link, std::function<void(int, QString)> callback, const QMap<QString, QString> &query_params) {
+void HttpHandler::handle_get_request(const QString &url_link, std::function<void(int, QString)> callback, const QMap<QString, QString> &query_params, const QMap<QString, QString> &header_params) {
 
 
     QSettings settings;
@@ -20,17 +20,19 @@ void HttpHandler::handle_get_request(const QString &url_link, std::function<void
     url.setQuery(query);
 
     QNetworkRequest request(url);
+    for (auto it = header_params.begin(); it != header_params.end(); ++it) {
+        request.setRawHeader(it.key().toUtf8(), it.value().toUtf8());
+    }
+    
+
     QNetworkReply *reply = manager->get(request);
     connect(reply, &QNetworkReply::finished, this, [callback, reply]() {
         
         int code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         QString data = reply->readAll();
-        //qDebug() << "code is " << code;
-       
-        callback(code, data);
-        
+
+        callback(code, data);        
         reply->deleteLater();
-        
     });
 
 

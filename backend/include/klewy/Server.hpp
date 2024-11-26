@@ -54,4 +54,5 @@ protected:
     void respond(HttpStatusCode code, std::function<void(const HttpResponsePtr &)> &&callback, Json::Value js);
 
     bool check_auth(const HttpRequestPtr &request, const std::string &name);
+    bool check_auth(const HttpRequestPtr &request) ;
 };

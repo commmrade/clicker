@@ -26,6 +26,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         dialog.h dialog.cpp dialog.ui
         httphandler.h httphandler.cpp
         usermanager.h usermanager.cpp
+        authmanager.h authmanager.cpp
 
 
     )

@@ -41,16 +41,19 @@ MainWindow::MainWindow(QWidget *parent)
 
 }
 
-
-void MainWindow::resizeEvent(QResizeEvent* event) {
-    ui->pushButton->setIconSize({ui->pushButton->geometry().width(), ui->pushButton->geometry().height()});
-}
-
 MainWindow::~MainWindow()
 {
     qDebug() << "Dstr";
     delete ui;
 }
+
+
+
+void MainWindow::resizeEvent(QResizeEvent* event) {
+    ui->pushButton->setIconSize({ui->pushButton->geometry().width(), ui->pushButton->geometry().height()});
+}
+
+
 
 void MainWindow::handle_server_dead() {
     setEnabled(false);
@@ -61,23 +64,20 @@ void MainWindow::handle_server_dead() {
 
     QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, [this, timer]() {
-        if (!user_manager->check_server_dead()) {
 
+        if (user_manager->check_server_dead()) {
 
-
-            // get request is async so it doesnt return true\false right away (need to change it ) <<< TODO
-
-
-
+        } else {
+         
             setEnabled(true);
-            timer->stop();
+             timer->stop();
         }
     });
 
     // Start the timer to check every 2 seconds
     timer->start(2000);
-
 }
+
 
 void MainWindow::on_pushButton_clicked()
 {
@@ -117,9 +117,7 @@ void MainWindow::update_balance() {
 
     ui->click_mod_label->setText("Current click mod: " + QString::number(user_manager->click_mod));
     ui->click_mod_button->setText("Upgrade for: " + QString::number(user_manager->click_mod_price) + "$");
-
     ui->pay_mod_label->setText("Current pay mod: " + QString::number(user_manager->hourly_pay_mod));
-
     ui->pay_mod_button->setText("Upgrade for: " + QString::number(user_manager->hourly_pay_mod_price) + "$");
 
     ui->pushButton->setText("Click");

@@ -22,7 +22,7 @@ public:
     HttpHandler();
     ~HttpHandler();
 
-    void handle_get_request(const QString &url_link, std::function<void(int, QString)> callback, const QMap<QString, QString> &query_params = {});
+    void handle_get_request(const QString &url_link, std::function<void(int, QString)> callback, const QMap<QString, QString> &query_params = {}, const QMap<QString, QString> &header_params = {});
     void handle_post_request(const QString &url_link, std::function<void(int, QString)> callback, const QMap<QString, QString> &query_params = {}, const QMap<QString, QString> &header_params = {}, const QJsonObject &json_obj = {});
 };
 

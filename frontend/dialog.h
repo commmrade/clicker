@@ -3,6 +3,8 @@
 
 #include <QDialog>
 #include<QNetworkAccessManager>
+#include <memory>
+#include "authmanager.h"
 #include "httphandler.h"
 namespace Ui {
 class Dialog;
@@ -33,11 +35,13 @@ private:
     //QNetworkAccessManager *manager;
     HttpHandler *handler;
 
+    std::unique_ptr<authmanager> auth_manager;
 
     void register_user();
     void login_user();
 
 
+    void auth(bool success);
 
 };
 #endif // DIALOG_H

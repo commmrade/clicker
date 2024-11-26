@@ -20,6 +20,9 @@ void UserManager::get_user_info() {
     QMap<QString, QString> params;
     params.insert("name", settings.value("name").toString());
 
+    QMap<QString, QString> header_par;
+    header_par.insert("Authorization", settings.value("token").toString());
+
     handler->handle_get_request("http://127.0.0.1:8848/api/user",
     [this](int code, QString reply_data) {
 
@@ -37,12 +40,12 @@ void UserManager::get_user_info() {
 
         } else if (code == 400) {
             qDebug() << "Error get user info";
-        } else {
+        } else if (code == 0) {
             emit error(SERVER_DEAD);
             
         }
-    },
-    params);
+    },params, header_par
+    );
 }
 
 void UserManager::purchase_modifier(const QString &name, const QString &mod_type) {
