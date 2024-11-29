@@ -1,25 +1,6 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
-#include <QCoreApplication>
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
-#include <QNetworkReply>
-#include <QUrl>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QDebug>
-#include<QTimer>
-#include<QSettings>
-#include<QMessageBox>
-#include<QCloseEvent>
-#include <memory>
-#include <qapplication.h>
-#include <qeventloop.h>
-#include <qjsonobject.h>
-#include<thread>
-#include<QUrlQuery>
-#include "dialog.h"
-#include "usermanager.h"
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -43,7 +24,6 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    qDebug() << "Dstr";
     delete ui;
 }
 
@@ -88,7 +68,6 @@ void MainWindow::on_pushButton_clicked()
 void MainWindow::closeEvent(QCloseEvent *event) {
     QEventLoop loop;
     connect(user_manager.get(), &UserManager::save_completed, &loop, &QEventLoop::quit);
-    qDebug() << "clone event";
     user_manager->save_clicks();
 
     loop.exec();

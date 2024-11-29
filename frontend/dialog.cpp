@@ -1,17 +1,5 @@
 #include "dialog.h"
-#include "authmanager.h"
-#include "ui_dialog.h"
-#include <QNetworkRequest>
-#include <QNetworkReply>
-#include <QUrl>
-#include <QJsonDocument>
-#include<QTimer>
-#include <QJsonObject>
-#include <QDebug>
-#include<QUrlQuery>
-#include<QSettings>
-#include <memory>
-#include <qmessagebox.h>
+#include <ui_dialog.h>
 
 Dialog::Dialog(QWidget *parent)
     : QDialog(parent)

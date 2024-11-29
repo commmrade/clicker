@@ -1,9 +1,6 @@
 #include "authmanager.h"
 #include "httphandler.h"
-#include <memory>
-#include <qjsonobject.h>
-#include <qmap.h>
-#include <qobject.h>
+
 
 authmanager::authmanager(QObject *parent)
     : QObject{parent},

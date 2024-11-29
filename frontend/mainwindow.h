@@ -4,9 +4,24 @@
 #include <QMainWindow>
 #include<QNetworkAccessManager>
 #include <memory>
-#include<unordered_map>
 #include "usermanager.h"
-
+#include <QCoreApplication>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+#include <QUrl>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QDebug>
+#include<QTimer>
+#include<QSettings>
+#include<QMessageBox>
+#include<QCloseEvent>
+#include <memory>
+#include <qapplication.h>
+#include <qeventloop.h>
+#include <qjsonobject.h>
+#include<QUrlQuery>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {

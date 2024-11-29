@@ -1,7 +1,5 @@
 #include "usermanager.h"
-#include "httphandler.h"
-#include <memory>
-#include <qmessagebox.h>
+
 
 UserManager::UserManager(QObject *parent)
     : QObject{parent}, clicks(0), handler(std::make_unique<HttpHandler>())
@@ -39,7 +37,6 @@ void UserManager::get_user_info() {
             emit user_info_updated();
 
         } else if (code == 400) {
-            qDebug() << "Error get user info";
         } else if (code == 0) {
             emit error(SERVER_DEAD);
             
@@ -50,7 +47,6 @@ void UserManager::get_user_info() {
 
 void UserManager::purchase_modifier(const QString &name, const QString &mod_type) {
     if ((mod_type == "click" || mod_type == "pay") && clicks > 0) {
-        qDebug() << "save clicks";
         save_clicks();
     }
     QSettings settings;
@@ -81,7 +77,6 @@ void UserManager::purchase_modifier(const QString &name, const QString &mod_type
 }
 
 void UserManager::save_clicks() {
-    qDebug() << "clicks " << clicks;
     if (clicks <= 0) {
         emit save_completed();
         return;
@@ -110,7 +105,7 @@ void UserManager::save_clicks() {
 
             exit(1);
         } else if (code == 400){
-            qDebug() << "Clicks 400 error";
+    
         } else {
             emit error(SERVER_DEAD);
         }
@@ -154,7 +149,6 @@ void UserManager::daily_payment() {
 }
 
 bool UserManager::check_server_dead() {
-    qDebug() << "checking...";
     QSettings settings;
     QMap<QString, QString> params;
     params.insert("name", settings.value("name").toString());
@@ -162,7 +156,6 @@ bool UserManager::check_server_dead() {
 
     handler->handle_get_request("http://127.0.0.1:8848/api/user",
         [this](int code, QString reply_data) {
-            qDebug() << code;
             return code == 0;
         },
         params);

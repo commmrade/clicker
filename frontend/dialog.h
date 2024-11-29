@@ -6,6 +6,19 @@
 #include <memory>
 #include "authmanager.h"
 #include "httphandler.h"
+#include <QNetworkRequest>
+#include <QNetworkReply>
+#include <QUrl>
+#include <QJsonDocument>
+#include<QTimer>
+#include <QJsonObject>
+#include <QDebug>
+#include<QUrlQuery>
+#include<QSettings>
+#include <memory>
+#include <qmessagebox.h>
+
+
 namespace Ui {
 class Dialog;
 }

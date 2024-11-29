@@ -5,6 +5,7 @@
 #include <QObject>
 #include <memory>
 #include<thread>
+#include <qmessagebox.h>
 
 enum KindError {
     SERVER_DEAD,

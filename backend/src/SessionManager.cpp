@@ -6,7 +6,7 @@
 
 
 std::string SessionManager::make_token(const std::string &name) {
-    std::string secret_key {"vladivostok1488"};
+    std::string secret_key {"vladivostok2000"};
 
     auto token = jwt::create()
     .set_issued_now()
@@ -18,7 +18,7 @@ std::string SessionManager::make_token(const std::string &name) {
 }
 
 bool SessionManager::check_token(const std::string &key) {
-    std::string secret_key {"vladivostok1488"};
+    std::string secret_key {"vladivostok2000"};
 
     try {
         auto decoded = jwt::decode(key);

@@ -6,6 +6,9 @@
 #include <memory>
 #include <qjsonobject.h>
 #include <qobject.h>
+#include <qmap.h>
+#include <qobject.h>
+
 
 class authmanager : public QObject
 {
