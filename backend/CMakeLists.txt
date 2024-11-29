@@ -15,7 +15,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 
 # Add the executable
-add_executable(proj src/main.cpp src/DatabaseHandler.cpp src/SessionManager.cpp src/bcrypt.cpp src/blowfish.cpp src/Server.cpp) 
+add_executable(proj src/main.cpp src/DatabaseHandler.cpp src/SessionManager.cpp src/utils/bcrypt.cpp src/utils/blowfish.cpp src/handlers/Game.cpp src/filters/JwtFilter.cpp src/handlers/AuthHandler.cpp src/utils/utils.cpp) 
 find_package(jwt-cpp CONFIG REQUIRED)
  
 target_link_libraries(proj PRIVATE jwt-cpp::jwt-cpp)

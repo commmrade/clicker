@@ -36,31 +36,9 @@ void Dialog::login_through_token() {
     
     QSettings settings;
     QString token = settings.value("token").toString();
-   
-    QMap<QString, QString> query_params;
-    query_params.insert("token", token);
-   
-    handler->handle_get_request("http://127.0.0.1:8848/api/login", [this](int code, QString reply_data) {
-        if (code == 200) {
-            
-            QJsonDocument jDoc = QJsonDocument::fromJson(reply_data.toUtf8());
-            QJsonObject jObj = jDoc.object();
-            QSettings settings;
-
-            settings.setValue("name", jObj["name"].toString());
-
-
-            accept();
-        } else if (code == 401) {
-            QSettings settings;
-            if (settings.contains("token"))
-                settings.remove("token");
-        } else {
-
-            ui->reg_btn->setText("Server is dead, wait");
-            ui->login_btn->setText("Server is dead, wait");
-        }
-    }, query_params);
+    
+    connect(auth_manager.get(), &authmanager::auth_attempt, this, &Dialog::auth);
+    auth_manager->login_token(token);
 }
 
 

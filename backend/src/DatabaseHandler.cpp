@@ -1,10 +1,4 @@
-#include "jdbc/cppconn/prepared_statement.h"
-#include "jdbc/cppconn/resultset.h"
-#include "jdbc/cppconn/statement.h"
-#include <exception>
 #include <klewy/DatabaseHandler.hpp>
-#include <memory>
-#include <optional>
 
 DatabaseHandler::DatabaseHandler(const std::string ip, const std::string username, const std::string passwd, const std::string scheme) {
     driver = get_driver_instance();

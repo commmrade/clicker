@@ -37,10 +37,10 @@
 #include <sys/types.h>
 #include <string.h>
 
-#include "node_blf.h"
+#include <klewy/utils/node_blf.h>
 
 #include "bcrypt/bcrypt.h"
-#include "openbsd.h"
+#include <klewy/utils/openbsd.h>
 
 #ifdef _WIN32
 #define snprintf _snprintf

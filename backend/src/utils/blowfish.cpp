@@ -39,7 +39,7 @@
  * Bruce Schneier.
  */
 
-#include "node_blf.h"
+#include <klewy/utils/node_blf.h>
 
 #undef inline
 #ifdef __GNUC__

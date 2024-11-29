@@ -4,12 +4,9 @@
 #include <functional>
 #include <netinet/tcp.h>
 #include <sys/socket.h>
-
-#include "klewy/Server.hpp"
 #include <drogon/drogon.h>
 using namespace drogon;
-//Known bugs
-// 1) If delete game table, it wont create it again, unless u truncate users
+
 
 int main()
 {

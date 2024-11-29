@@ -16,29 +16,7 @@ std::string SessionManager::make_token(const std::string &name) {
 
     return token;
 }
-bool SessionManager::check_token_and_name(const std::string &key, const std::string &name) {
-    std::string secret_key {"vladivostok1488"};
-    try {
-        auto decoded = jwt::decode(key);
-        if (decoded.get_payload_claim("name").as_string() != name) {
-            return false;
-        }
 
-        auto verifier = jwt::verify()
-        .allow_algorithm(jwt::algorithm::hs256{secret_key});
-        
-
-        verifier.verify(decoded);
-
-        //std::cout << "TOKEN IS VALID\n";
-        return true;
-
-    } catch (std::exception &e) {
-        std::cout << "verificatiln failed " << e.what() << std::endl;
-    }
-
-    return false;
-} 
 bool SessionManager::check_token(const std::string &key) {
     std::string secret_key {"vladivostok1488"};
 

@@ -1,6 +1,5 @@
 #include "jdbc/cppconn/connection.h"
 #include <cmath>
-#include <iomanip>
 #include "jdbc/cppconn/driver.h"
 #include <optional>
 #include <string>
@@ -9,8 +8,11 @@
 #include <jdbc/cppconn/resultset.h>
 #include <jdbc/cppconn/statement.h>
 #include <jdbc/cppconn/prepared_statement.h>
-#include <sstream>
+#include <exception>
+#include <iomanip>
 
+#include <memory>
+#include <optional>
 
 struct Modifiers {
     double click_modifier;

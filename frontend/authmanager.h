@@ -15,6 +15,8 @@ public:
 
 
     void login(const QString &name, const QString &password);
+    void login_token(const QString &auth_token);
+
     void reg(const QString &name, const QString &password);
 
     void login_success();
