@@ -12,7 +12,7 @@ api::api() {
 
 
 void api::user(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, const std::string &name) {
-
+    
     if (name.empty()) {
         Utility::respond(k400BadRequest, std::move(callback));
         return;
