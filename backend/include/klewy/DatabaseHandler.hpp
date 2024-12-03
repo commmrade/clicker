@@ -1,18 +1,18 @@
+#include "jdbc/cppconn/callback.h"
 #include "jdbc/cppconn/connection.h"
 #include <cmath>
 #include "jdbc/cppconn/driver.h"
+#include <mutex>
 #include <optional>
+#include <queue>
 #include <string>
 #include <jdbc/cppconn/driver.h>
 #include <jdbc/cppconn/exception.h>
 #include <jdbc/cppconn/resultset.h>
 #include <jdbc/cppconn/statement.h>
 #include <jdbc/cppconn/prepared_statement.h>
-#include <exception>
-#include <iomanip>
-
-#include <memory>
-#include <optional>
+#include<optional>
+#include <klewy/ConnectionPool.hpp>
 
 struct Modifiers {
     double click_modifier;
@@ -22,10 +22,12 @@ struct Modifiers {
     double hourly_payment_mod;
 };
 
+
+
 class DatabaseHandler {
 private:
     sql::Driver *driver;
-    sql::Connection *con;
+    std::unique_ptr<ConnectionPool> con_pool;
 public:
 
     DatabaseHandler(const std::string ip, const std::string username, const std::string passwd, const std::string scheme);

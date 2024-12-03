@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5.0)
+cmake_minimum_required(VERSION 3.10.0)
 project(proj VERSION 0.1.0 LANGUAGES C CXX)
 
 # Find Drogon package
@@ -15,10 +15,13 @@ set(CMAKE_CXX_STANDARD 20)
 
 
 # Add the executable
-add_executable(proj src/main.cpp src/DatabaseHandler.cpp src/SessionManager.cpp src/utils/bcrypt.cpp src/utils/blowfish.cpp src/handlers/Game.cpp src/filters/JwtFilter.cpp src/handlers/AuthHandler.cpp src/utils/utils.cpp) 
-find_package(jwt-cpp CONFIG REQUIRED)
- 
-target_link_libraries(proj PRIVATE jwt-cpp::jwt-cpp)
+add_executable(proj src/main.cpp src/DatabaseHandler.cpp src/SessionManager.cpp src/utils/bcrypt.cpp src/utils/blowfish.cpp src/handlers/Game.cpp src/filters/JwtFilter.cpp src/handlers/AuthHandler.cpp src/utils/utils.cpp src/ConnectionPool.cpp) 
+# Find OpenSSL
+find_package(OpenSSL REQUIRED)
+
+# Link OpenSSL libraries to your project
+target_link_libraries(proj PRIVATE OpenSSL::Crypto OpenSSL::SSL)
+
 # Include directories for the project
 target_include_directories(proj PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
