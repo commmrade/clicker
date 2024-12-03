@@ -229,6 +229,7 @@ void DatabaseHandler::set_balance(const std::string &name, const double sum) {
     pstmt->setDouble(1, std::round(sum * 100.0f) / 100.0f);
     pstmt->setInt(2, user_id.value());
     pstmt->executeUpdate();
+    
     con_pool->return_connection(std::move(con.value()));
 
 }
