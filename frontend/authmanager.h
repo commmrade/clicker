@@ -24,9 +24,11 @@ public:
 
     void login_success();
 
-    std::unique_ptr<HttpHandler> handler;
+private:
+    std::unique_ptr<HttpHandler> handler;    
 
 signals:
+    
     void auth_attempt(bool success);
 };
 

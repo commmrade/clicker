@@ -6,13 +6,14 @@ auth::auth() {
 }
 
 void auth::login(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
-
+    
     auto json_obj = req->getJsonObject();
     
     if (!json_obj) {
         Utility::respond(HttpStatusCode::k400BadRequest, std::move(callback));
         return;
     }
+    
    
     const std::string name = (*json_obj)["name"].asString();
     const std::string password = (*json_obj)["password"].asString();

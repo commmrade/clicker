@@ -22,12 +22,6 @@ public:
 
 
 
-    int clicks;
-    double balance;
-    double click_mod;
-    double hourly_pay_mod;
-    double click_mod_price;
-    double hourly_pay_mod_price;
 
     void get_user_info();
     void purchase_modifier(const QString &name, const QString &mod_type);
@@ -37,10 +31,25 @@ public:
     bool check_server_dead();
 
 
+    int get_clicks() const { return clicks; }
+    double get_balance() const { return balance; }
+    double get_click_mod() const { return click_mod; } 
+    double get_hourly_pay_mod() const { return hourly_pay_mod; }
+    double get_hourly_pay_mod_price() const { return hourly_pay_mod_price; }
+    double get_click_mod_price() const { return click_mod_price; }
+    void set_clicks(int new_val) {
+        clicks = new_val;
+    }
 
 private:
     std::unique_ptr<HttpHandler> handler;
     
+    int clicks;
+    double balance;
+    double click_mod;
+    double hourly_pay_mod;
+    double click_mod_price;
+    double hourly_pay_mod_price;
 
     
 

@@ -62,7 +62,7 @@ void MainWindow::handle_server_dead() {
 void MainWindow::on_pushButton_clicked()
 {
     ui->pushButton->setIconSize({ui->pushButton->geometry().width(), ui->pushButton->geometry().height()});    
-    user_manager->clicks++;
+    user_manager->set_clicks(user_manager->get_clicks() + 1);
     update_balance();
 }
 void MainWindow::closeEvent(QCloseEvent *event) {
@@ -92,12 +92,12 @@ void MainWindow::on_click_mod_button_clicked()
 }
 
 void MainWindow::update_balance() {
-    ui->balance_label->setText("Current balance: " + QString::number(user_manager->balance + user_manager->clicks * user_manager->click_mod) + "$");
+    ui->balance_label->setText("Current balance: " + QString::number(user_manager->get_balance() + user_manager->get_clicks() * user_manager->get_click_mod()) + "$");
 
-    ui->click_mod_label->setText("Current click mod: " + QString::number(user_manager->click_mod));
-    ui->click_mod_button->setText("Upgrade for: " + QString::number(user_manager->click_mod_price) + "$");
-    ui->pay_mod_label->setText("Current pay mod: " + QString::number(user_manager->hourly_pay_mod));
-    ui->pay_mod_button->setText("Upgrade for: " + QString::number(user_manager->hourly_pay_mod_price) + "$");
+    ui->click_mod_label->setText("Current click mod: " + QString::number(user_manager->get_click_mod()));
+    ui->click_mod_button->setText("Upgrade for: " + QString::number(user_manager->get_click_mod_price()) + "$");
+    ui->pay_mod_label->setText("Current pay mod: " + QString::number(user_manager->get_hourly_pay_mod()));
+    ui->pay_mod_button->setText("Upgrade for: " + QString::number(user_manager->get_hourly_pay_mod_price()) + "$");
 
     ui->pushButton->setText("Click");
 }
@@ -137,6 +137,10 @@ void MainWindow::error_handler(KindError error_type) {
 
             int res = box.exec();
             QApplication::exit();
+            break;
+        }
+        default: {
+            qDebug() << "Unimplemented error type found";
             break;
         }
     }

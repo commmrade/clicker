@@ -48,20 +48,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
- 
-    //double balance;
-
-    //QNetworkAccessManager *manager;
-    
-
-
-    std::unique_ptr<UserManager> user_manager;
-
-    //void get_user_info();
-  
-
-
-    
+    std::unique_ptr<UserManager> user_manager;   
 
     void handle_server_dead();
 protected:
